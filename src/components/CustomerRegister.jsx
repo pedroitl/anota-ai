@@ -46,7 +46,7 @@ function CustomerRegister() {
 
     return (
         <div className='mx-auto flex flex-col gap-1 items-start max-w-sm w-full p-2'>
-            <form onSubmit={validar} className="w-full">
+            <form onSubmit={handleSubmit} className="w-full">
                 <label htmlFor="nomeCompleto" className="font-semibold text-start">Nome Completo:</label>
                 <input type="text" id="nomeCompleto" value={nomeCompleto} onChange={(e) => setNomeCompleto(e.target.value)}
                 placeholder="Digite seu nome completo" 
