@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function CustomerRegister() {
     const [nomeCompleto, setNomeCompleto] = useState('');
@@ -7,6 +8,7 @@ function CustomerRegister() {
     const [mesa, setMesa] = useState('');
 
     const [erro, setErro] = useState("");
+    const navigate = useNavigate();
 
     function validar() {
         if (nomeCompleto.trim() === "") {
@@ -34,13 +36,13 @@ function CustomerRegister() {
             return false;
         }
         setErro("");
-        return true;
+        return true ;
     }
 
     function handleSubmit(e) {
         e.preventDefault();
-        if (validar === true) {
-            return
+        if (validar()) {
+             navigate("/home");
         }
     };
 
