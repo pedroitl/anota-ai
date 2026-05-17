@@ -2,6 +2,7 @@ import Logo from './components/UI/Logo.jsx';
 import CustomerRegister from './components/CustomerRegister';
 import Cardapio from './components/Cardapio';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import HomeCustomer from './pages/customer/HomeCustomer.jsx';
 function Home(){
   return(
   <div className='bg-[#fdfdfd] font-sans  p-2 w-screen h-screen text-center '>
@@ -21,7 +22,8 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/home" element={<Cardapio />} />
+          <Route path="/home-cliente" element={<HomeCustomer />} />
+          <Route path="/cardapio" element={<Cardapio />} />
         </Routes>
       </Router>
       

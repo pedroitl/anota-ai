@@ -1,9 +1,15 @@
 import CustomerRegister from "../../components/CustomerRegister";
+import { useNavigate } from "react-router-dom";
+
 
 function HomeCustomer() {
+    const navigate = useNavigate();
+    
     return (
         <div>           
-            <CustomerRegister />
+           {/* <CustomerRegister /> */}
+           
+                <button onClick={() => navigate("/cardapio")}>Cardapio</button>
         </div>
         //Pagina inicial do cliente
         //contem logo

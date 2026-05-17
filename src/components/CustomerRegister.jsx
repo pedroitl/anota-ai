@@ -42,7 +42,7 @@ function CustomerRegister() {
     function handleSubmit(e) {
         e.preventDefault();
         if (validar()) {
-             navigate("/home");
+             navigate("/home-cliente");
         }
     };
 
