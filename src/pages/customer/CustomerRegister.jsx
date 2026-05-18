@@ -48,13 +48,16 @@ function CustomerRegister() {
   }
 
   return (
-    <div className="mx-auto flex flex-col gap-1  max-w-sm w-full p-2">
-      <Logo />
-      <h1 className="text-lg md:text-2xl font-bold">Bem-vindo ao Anota Aí</h1>
-      <p className="p-2 text-lg md:text-2xl w-full">
-        Antes de começar seu pedido, precisamos de algumas informações rápidas
-        para garantir um atendimento mais ágil e organizado.
-      </p>
+    <div className="mx-auto flex flex-col gap-1 w-full p-2 max-w-sm md:max-w-md lg:max-w-lg">
+      <div className="flex flex-col items-center gap-2">
+        <Logo />
+        <h2 className="text-center text-lg md:text-2xl font-bold">Bem-vindo ao Anota Aí</h2>
+        <p className="p-2 text-center text-lg md:text-2xl w-full">
+          Antes de começar seu pedido, precisamos de algumas informações rápidas
+          para garantir um atendimento mais ágil e organizado.
+        </p>
+      </div>
+      
       <form
         onSubmit={handleSubmit}
         className="w-full flex flex-col items-start"
