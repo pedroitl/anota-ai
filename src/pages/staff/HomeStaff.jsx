@@ -1,6 +1,46 @@
 import Logo from "../../components/UI/Logo";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function HomeStaff() {
+    const [funcionarios] = useState([{
+        email: "leh@gmail.com",
+        senha: "hello"
+    },
+    {
+        email: "pedro@gmail.com",
+        senha: "hello"
+    },
+    {
+        email: "luiz@gmail.com",
+        senha: "hello"
+    }]);
+    const navigate = useNavigate();
+
+    const [email, setEmail] = useState('');
+    const [senha, setSenha] = useState('');
+
+    const [erro, setErro] = useState("");
+
+    console.log(email);
+
+    function handleSubmit(e) {
+        e.preventDefault();
+        let funcionarioEncontrado = null;
+
+        for(let contador = 0; contador < funcionarios.length; contador++) {
+
+            if(funcionarios[contador].email === email && funcionarios[contador].senha === senha) {
+                funcionarioEncontrado = funcionarios[contador];
+            } 
+        }
+        if (funcionarioEncontrado) {
+            navigate("/home-funcionario/waiter/mesas")
+        } else {
+            setErro("Email ou senha inválidos");
+        }
+    }
+
     return (
         <div className="mx-auto flex flex-col gap-1 w-full p-2 max-w-sm md:max-w-md lg:max-w-lg">
             <div className="flex flex-col items-center gap-2" >
@@ -11,7 +51,7 @@ function HomeStaff() {
                 </p>
             </div>
             <form 
-            action="submit" 
+            onSubmit={handleSubmit}
             className="w-full flex flex-col items-start">
                 <label 
                 htmlFor="email"
@@ -22,6 +62,8 @@ function HomeStaff() {
                 type="email" 
                 id="email" 
                 name="email" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Digite seu email"
                 className="border border-gray-300 rounded-md p-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-900 w-full"
                 required />
@@ -34,9 +76,12 @@ function HomeStaff() {
                 type="password" 
                 id="password" 
                 name="password" 
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
                 placeholder="Digite sua senha"
                 className="border border-gray-300 rounded-md p-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-900 w-full"
                 required />
+                {erro && <p>{erro}</p>}
                 <button 
                 type="submit"
                 className="bg-[#556B2F] w-full text-white rounded-md p-2 mb-4 px-4 mt-4 hover:bg-[#556B2F] focus:outline-none focus:ring-2 focus:ring-[#556B2F]">
