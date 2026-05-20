@@ -43,7 +43,7 @@ function CustomerRegister() {
   function handleSubmit(e) {
     e.preventDefault();
     if (validar() === true) {
-      navigate("/cardapio");
+      navigate("/home-cliente/cardapio");
     }
   }
 
