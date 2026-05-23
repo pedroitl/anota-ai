@@ -30,6 +30,18 @@ function Cardapio() {
         descricao: "Produto",
       },
     },
+    {
+      id: 3,
+      nome: "Produto 3",
+      descricao:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec posuere elementum efficitur. Sed pellentesque ipsum tincidunt blandit molestie.",
+      preco: 19.9,
+      quantidade: 0,
+      imagem: {
+        caminho: "../assets/produtos_template.svg",
+        descricao: "Produto",
+      },
+    },
   ]);
 
   function aumentar(id) {
@@ -81,17 +93,18 @@ function Cardapio() {
       <h1 className="text-4xl font-bold text-center text-gray-800 mb-10">
         Cardápio
       </h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
         {produtos.map(function (produto) {
           return (
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden ">
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden"
+            key={produto.id}>
               <img
                 src={produto.imagem?.caminho}
                 alt={produto.imagem?.descricao}
                 className="w-full h-56 object-cover"
               />
 
-              <div className="p-5" key={produto.id}>
+              <div className="p-5" >
                 <h2 className="text-2xl font-bold text-gray-800 mb-2">
                   {produto.nome}
                 </h2>
@@ -107,18 +120,18 @@ function Cardapio() {
 
                   <div className="flex items-center gap-3">
                     <button
-                      className="w-8 pb-2 h-8 rounded-full bg-red-900 text-white text-xl hover:bg-red-600"
+                      className="w-8 h-8 rounded-full bg-red-900 text-white text-xl hover:bg-red-600 flex items-center justify-center leading-none"
                       onClick={() => diminuir(produto.id)}
                     >
                       -
                     </button>
 
-                    <span className="text-lg font-bold ">
+                    <span className="text-lg font-bold min-w-[20px] text-center">
                       {produto.quantidade}
                     </span>
 
                     <button
-                      className="w-8 pb-2 h-8 rounded-full bg-green-900 text-white text-xl hover:bg-green-600"
+                      className="w-8 pb-2 h-8 rounded-full bg-green-900 text-white text-xl hover:bg-green-600 flex items-center justify-center leading-none"
                       onClick={() => aumentar(produto.id)}
                     >
                       +
