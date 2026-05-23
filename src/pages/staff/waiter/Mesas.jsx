@@ -34,6 +34,10 @@ function Mesas(){
         fecharModal();
     }
 
+    function Operador () {
+        return 'Pedro';
+        }
+
     return(
         <div className="min-h-screen bg-[#f5f5f5] w-full box-border overflow-x-hidden flex flex-col justify-between p-4 sm:p-8">
             <header className="mb-8 flex flex-col items-center justify-center">
@@ -42,7 +46,7 @@ function Mesas(){
                         Gerenciamento de Mesas</p>
             </header>
                        
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 w-full">
+            <main className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 w-full">
                 {mesas.map((mesa) => (
                     <MesaCard
                         key={mesa.numero}
@@ -51,7 +55,7 @@ function Mesas(){
                         onClick={() => abrirModal(mesa.numero)}
                     />
                 ))}
-            </div>
+            </main>
             
         
             {modalAberto && (
@@ -120,7 +124,7 @@ function Mesas(){
             )}
 
             <footer className="w-full max-w-5xl mx-auto border-t border-gray-200 mt-12 pt-4 flex flex-col items-centersm:flex-row justify-between items-center gap-2 text-xs text-gray-500">
-                <p>Atualizado em tempo real | Operador: <span className="font-semibold">{}</span></p>
+                <p>Atualizado em tempo real | Operador: <span className="font-semibold">{Operador()}</span></p>
             </footer>
         </div>
     )
