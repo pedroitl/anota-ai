@@ -14,7 +14,7 @@ function Cardapio() {
       preco: 39.9,
       quantidade: 0,
       imagem: {
-        caminho: "",
+        caminho: "../assets/produtos_template.svg",
         descricao: "Produto",
       },
     },
@@ -26,7 +26,7 @@ function Cardapio() {
       preco: 29.9,
       quantidade: 0,
       imagem: {
-        caminho: "",
+        caminho: "../assets/produtos_template.svg",
         descricao: "Produto",
       },
     },
@@ -107,7 +107,7 @@ function Cardapio() {
 
                   <div className="flex items-center gap-3">
                     <button
-                      className="w-8 h-8 rounded-full bg-red-900 text-white text-xl hover:bg-red-600"
+                      className="w-8 pb-2 h-8 rounded-full bg-red-900 text-white text-xl hover:bg-red-600"
                       onClick={() => diminuir(produto.id)}
                     >
                       -
@@ -118,7 +118,7 @@ function Cardapio() {
                     </span>
 
                     <button
-                      className="w-8 h-8 rounded-full bg-green-900 text-white text-xl hover:bg-green-600"
+                      className="w-8 pb-2 h-8 rounded-full bg-green-900 text-white text-xl hover:bg-green-600"
                       onClick={() => aumentar(produto.id)}
                     >
                       +
