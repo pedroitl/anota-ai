@@ -3,26 +3,25 @@ function MesaCard({numero, status, onClick}) {
 
 
     function getCorStatus(status){
-        if (status === 'livre'){
-            return 'bg-green-600';
-        } else if(status === 'ocupada'){
-            return 'bg-red-500'
-        }else if(status === 'aguardando_pedido'){
-            return 'bg-orange-400'
-        }else if(status === 'novo_pedido'){
-            return 'bg-yellow-300'
-        }else if(status === 'fechamento_solicitado'){
-            return 'bg-gray-600'
+        if (status === 'Livre'){
+            return 'bg-[#556B2F]';
+        } else if(status === 'Ocupada'){
+            return 'bg-[#7A1F2B]'
+        }else if(status === 'Aguardando Pedido'){
+            return 'bg-[#B85C38]'
+        }else if(status === 'Novo Pedido'){
+            return 'bg-[#C8A44D]'
+        }else if(status === 'Fechamento Solicitado'){
+            return 'bg-[#4E5047]'
         }
     }
 
 
     return(
-        <div className={`${getCorStatus(status)} rounded-b-lg p-8 cursor-pointer hover:opacity-90 
-        transition-opacity flex flex-col items-center justify-center h-40`}  onClick={onClick}>
-            <p className="text-6x1 font-bold text-white">{numero}</p>
-            <p className="text-sm text-white mt-2 capitalize">Status: {status}</p>
-            
+        <div className={`${getCorStatus(status)} rounded-2xl px-4 cursor-pointer hover:opacity-90 
+            transition-opacity flex flex-col items-center justify-center h-44 w-full shadow-md text-white`}  onClick={onClick}>
+            <p className="text-3xl font-bold">{numero}</p>
+            <p className="text-xl sm:text-sm mt-3 text-center break-words max-w-full leading-tight font-light ">{status}</p>
         </div>
     );
 
