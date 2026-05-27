@@ -1,20 +1,10 @@
 import Logo from "../../components/UI/Logo";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import users from "../../users/users.js";
 
 function HomeStaff() {
-    const [funcionarios] = useState([{
-        email: "leh@gmail.com",
-        senha: "hello"
-    },
-    {
-        email: "pedro@gmail.com",
-        senha: "hello"
-    },
-    {
-        email: "luiz@gmail.com",
-        senha: "hello"
-    }]);
+
     const navigate = useNavigate();
 
     const [email, setEmail] = useState('');
@@ -26,16 +16,26 @@ function HomeStaff() {
 
     function handleSubmit(e) {
         e.preventDefault();
-        let funcionarioEncontrado = null;
+        let userEncontrado = null;
 
-        for(let contador = 0; contador < funcionarios.length; contador++) {
+        for(let contador = 0; contador < users.length; contador++) {
 
-            if(funcionarios[contador].email === email && funcionarios[contador].senha === senha) {
-                funcionarioEncontrado = funcionarios[contador];
+            if(users[contador].email === email && users[contador].password === senha) {
+                userEncontrado = users[contador];
             } 
         }
-        if (funcionarioEncontrado) {
-            navigate("/home-funcionario/waiter/mesas")
+        if (userEncontrado) {
+            if(userEncontrado.role === "waiter") {
+                navigate("/home-funcionario/waiter/mesas");
+            } else if(userEncontrado.role === "kitchen") {
+                navigate("/home-funcionario/kitchen/pedidos");
+            } else if(userEncontrado.role === "cashier") {
+                navigate("/home-funcionario/cashier/finalizar");
+            } else if(userEncontrado.role === "manager") {
+                navigate("/home-funcionario/manager");
+            } else {
+                setErro("Role do usuário não reconhecida");
+            }
         } else {
             setErro("Email ou senha inválidos");
         }

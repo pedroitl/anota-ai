@@ -7,7 +7,7 @@
 const users = [
     {
         id: 1,
-        email: "garçom@gmail.com",
+        email: "garcom@gmail.com",
         password: "garçom123",
         role: "waiter"
     },
@@ -25,14 +25,10 @@ const users = [
     },
     {
       id: 4,
-      email: "admin@gmail.com",
-      password: "admin123",
-      role: "admin"
-    },
-    {
-      id: 5,
       email: "gerente@gmail.com",
       password: "gerente123",
       role: "manager"
     }
 ];
+
+export default users;
