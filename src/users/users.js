@@ -1,8 +1,4 @@
-//cliente = cardapio, pedidos
-//garçom = pedidos, mesas, cardapio, notificacoes
-//cozinha = pedidos, notificacoes
-//admin = cardapio, mesas, pedidos, usuarios
-//gerente = cardapio, mesas, pedidos, usuarios, relatorios
+
 
 const users = [
     {
@@ -14,18 +10,21 @@ const users = [
     {
         id: 2,
         email: "cozinha@gmail.com",
+        nome: "Cozinha",
         password: "cozinha123",
         role: "kitchen"
     },
     {
         id: 3,
         email: "caixa@gmail.com",
+        nome: "Caixa",
         password: "caixa123",       
         role: "cashier"
     },
     {
       id: 4,
       email: "gerente@gmail.com",
+      nome: "Gerente",
       password: "gerente123",
       role: "manager"
     }

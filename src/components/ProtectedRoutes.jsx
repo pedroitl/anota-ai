@@ -4,8 +4,6 @@ function ProtectedRoutes({children, allowedRoles}) {
 
     const userLogado = JSON.parse(localStorage.getItem("user"));
 
-    console.log(userLogado);
-    console.log(allowedRoles);
 
     if(!userLogado) {
         return <Navigate to="/home-funcionario" />;
