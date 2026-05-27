@@ -24,7 +24,10 @@ function HomeStaff() {
                 userEncontrado = users[contador];
             } 
         }
+
         if (userEncontrado) {
+            localStorage.setItem("user", JSON.stringify(userEncontrado));
+            
             if(userEncontrado.role === "waiter") {
                 navigate("/home-funcionario/waiter/mesas");
             } else if(userEncontrado.role === "kitchen") {
