@@ -77,49 +77,42 @@ function Mesas(){
 
                     <div className="flex flex-col gap-3 mb-6">
                         <button 
-                            className="bg-green-500 text-white px-4 py-3 rounded-lg hover:bg-green-600 transition-colors font-medium"
+                            className="bg-[#556B2F] text-white px-4 py-3 rounded-lg hover:bg-green-600 transition-colors font-medium"
                             onClick={() => mudarStatus(mesaSelecionada, 'Livre')}
                         >
                             Marcar como Livre
                         </button>
                         
                         <button 
-                            className="bg-red-500 text-white px-4 py-3 rounded-lg hover:bg-red-600 transition-colors font-medium"
+                            className="bg-[#7A1F2B] text-white px-4 py-3 rounded-lg hover:bg-red-600 transition-colors font-medium"
                             onClick={() => mudarStatus(mesaSelecionada, 'Ocupada')}
                         >
                             Marcar como Ocupada
                         </button>
                         
                         <button 
-                            className="bg-orange-400 text-white px-4 py-3 rounded-lg hover:bg-orange-500 transition-colors font-medium"
+                            className="bg-[#B85C38] text-white px-4 py-3 rounded-lg hover:bg-orange-500 transition-colors font-medium"
                             onClick={() => mudarStatus(mesaSelecionada, 'Aguardando Pedido')}
                         >
                             Aguardando Pedido
                         </button>
                         
                         <button 
-                            className="bg-yellow-300 text-white px-4 py-3 rounded-lg hover:bg-yellow-400 transition-colors font-medium"
+                            className="bg-[#C8A44D] text-white px-4 py-3 rounded-lg hover:bg-yellow-400 transition-colors font-medium"
                             onClick={() => mudarStatus(mesaSelecionada, 'Novo Pedido')}
                         >
                             Novo Pedido
                         </button>
                         
                         <button 
-                            className="bg-gray-500 text-white px-4 py-3 rounded-lg hover:bg-gray-600 transition-colors font-medium"
+                            className="bg-[#4E5047] text-white px-4 py-3 rounded-lg hover:bg-gray-600 transition-colors font-medium"
                             onClick={() => mudarStatus(mesaSelecionada, 'Fechamento Solicitado')}
                         >
                             Fechamento Solicitado
                         </button>
                     </div>
 
-                    <div className="flex gap-3">
-                        <button 
-                            onClick={fecharModal}
-                            className="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors font-medium"
-                        >
-                            Fechar
-                        </button>
-                    </div>
+                    
                 </div>
             )}
 

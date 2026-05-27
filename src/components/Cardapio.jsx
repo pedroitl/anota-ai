@@ -126,7 +126,7 @@ function Cardapio() {
                       -
                     </button>
 
-                    <span className="text-lg font-bold min-w-[20px] text-center">
+                    <span className="text-lg font-bold min-w-20px text-center">
                       {produto.quantidade}
                     </span>
 
@@ -154,7 +154,7 @@ function Cardapio() {
       </div>
       {abrirDialog && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-2xl w-[500px]">
+          <div className="bg-white p-6 rounded-2xl w-500px">
             <h1 className="text-2xl font-bold mb-4">Resumo do Pedido</h1>
             {produtosSelecionados.map(function (produto) {
               return (
