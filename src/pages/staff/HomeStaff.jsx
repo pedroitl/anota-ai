@@ -14,33 +14,23 @@ function HomeStaff() {
 
     console.log(email);
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault();
-        let userEncontrado = null;
-
-        for(let contador = 0; contador < users.length; contador++) {
-
-            if(users[contador].email === email && users[contador].password === senha) {
-                userEncontrado = users[contador];
-            } 
-        }
-
-        if (userEncontrado) {
-            localStorage.setItem("user", JSON.stringify(userEncontrado));
-            
-            if(userEncontrado.role === "waiter") {
-                navigate("/home-funcionario/waiter/mesas");
-            } else if(userEncontrado.role === "kitchen") {
-                navigate("/home-funcionario/kitchen/pedidos");
-            } else if(userEncontrado.role === "cashier") {
-                navigate("/home-funcionario/cashier/finalizar");
-            } else if(userEncontrado.role === "manager") {
-                navigate("/home-funcionario/manager");
-            } else {
-                setErro("Role do usuário não reconhecida");
+        try{
+            const response = await fetch("http://localhost:8080/auth/login",{
+                method: "POST",
+                headers: {"Content-type": "application/json"},
+                body: JSON.stringify({user: email, password: senha})
+            })
+            if(!response){
+                throw new Error("Usuário ou senha invalidos")
             }
-        } else {
-            setErro("Email ou senha inválidos");
+            const token = await response.text();
+            localStorage.setItem("token", token);
+            navigate("/")
+
+        }catch(erro){
+
         }
     }
 
