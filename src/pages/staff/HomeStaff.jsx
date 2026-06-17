@@ -30,7 +30,7 @@ function HomeStaff() {
             navigate("/")
 
         }catch(erro){
-
+            setErro("Usuário ou senha invalidos");
         }
     }
 
