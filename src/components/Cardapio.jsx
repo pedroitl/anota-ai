@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Cardapio() {
@@ -6,7 +6,28 @@ function Cardapio() {
   const [abrirDialog, setAbrirDialog] = useState(false);
 
   const [produtos, setProdutos] = useState([]);
+  useEffect(() => {
+  async function carregarProdutos() {
+    try {
+      const response = await fetch("http://localhost:8080/produtos");
 
+      const data = await response.json();
+
+      const produtosFormatados = data.map(produto => ({
+        ...produto,
+        quantidade: 0
+      }));
+
+      setProdutos(produtosFormatados);
+
+    } catch (error) {
+      console.error("Erro ao carregar produtos:", error);
+    }
+    
+  }
+
+  carregarProdutos();
+}, []);
   function aumentar(id) {
     const novosProdutos = produtos.map(function (produto) {
       if (produto.id === id) {
@@ -62,8 +83,8 @@ function Cardapio() {
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden"
             key={produto.id}>
               <img
-                src={produto.imagem?.caminho}
-                alt={produto.imagem?.descricao}
+                src={produto.imagemURL}
+                alt={produto.nome}
                 className="w-full h-56 object-cover"
               />
 
