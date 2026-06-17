@@ -27,7 +27,6 @@ function Login() {
             const data = await response.json();
 
             localStorage.setItem("token", data.accessToken);
-            localStorage.setItem("refreshToken", data.refreshTokenToken);
             localStorage.setItem("role", data.role);
 
             switch (data.role) {

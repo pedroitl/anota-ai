@@ -1,49 +1,33 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Cardapio() {
   const navigate = useNavigate();
   const [abrirDialog, setAbrirDialog] = useState(false);
 
-  const [produtos, setProdutos] = useState([
-    {
-      id: 1,
-      nome: "Produto 1",
-      descricao:
-        "Aenean congue, nunc eu congue tristique, eros nulla congue elit, sit amet blandit nulla libero eget sem. Quisque euismod ac elit at aliquam.",
-      preco: 39.9,
-      quantidade: 0,
-      imagem: {
-        caminho: "https://images.pexels.com/photos/31391694/pexels-photo-31391694.jpeg",
-        descricao: "Produto",
-      },
-    },
-    {
-      id: 2,
-      nome: "Produto 2",
-      descricao:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec posuere elementum efficitur. Sed pellentesque ipsum tincidunt blandit molestie.",
-      preco: 29.9,
-      quantidade: 0,
-      imagem: {
-        caminho: "https://images.pexels.com/photos/32383596/pexels-photo-32383596.jpeg",
-        descricao: "Produto",
-      },
-    },
-    {
-      id: 3,
-      nome: "Produto 3",
-      descricao:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec posuere elementum efficitur. Sed pellentesque ipsum tincidunt blandit molestie.",
-      preco: 19.9,
-      quantidade: 0,
-      imagem: {
-        caminho: "https://images.pexels.com/photos/28559491/pexels-photo-28559491.jpeg",
-        descricao: "Produto",
-      },
-    },
-  ]);
+  const [produtos, setProdutos] = useState([]);
+  useEffect(() => {
+  async function carregarProdutos() {
+    try {
+      const response = await fetch("http://localhost:8080/produtos");
 
+      const data = await response.json();
+
+      const produtosFormatados = data.map(produto => ({
+        ...produto,
+        quantidade: 0
+      }));
+
+      setProdutos(produtosFormatados);
+
+    } catch (error) {
+      console.error("Erro ao carregar produtos:", error);
+    }
+    
+  }
+
+  carregarProdutos();
+}, []);
   function aumentar(id) {
     const novosProdutos = produtos.map(function (produto) {
       if (produto.id === id) {
@@ -99,8 +83,8 @@ function Cardapio() {
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden"
             key={produto.id}>
               <img
-                src={produto.imagem?.caminho}
-                alt={produto.imagem?.descricao}
+                src={produto.imagemURL}
+                alt={produto.nome}
                 className="w-full h-56 object-cover"
               />
 
