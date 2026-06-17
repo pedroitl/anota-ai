@@ -7,7 +7,6 @@ function CustomerRegister() {
   const [nomeCompleto, setNomeCompleto] = useState("");
   const [telefone, setTelefone] = useState("");
   const [cpf, setCpf] = useState("");
-  const [mesa, setMesa] = useState("");
 
   const [erro, setErro] = useState("");
 
@@ -30,10 +29,6 @@ function CustomerRegister() {
     }
     if (cpf.trim().length !== 11) {
       setErro("O CPF deve conter 11 caracteres.");
-      return false;
-    }
-    if (mesa === "") {
-      setErro("A seleção de mesa é obrigatória.");
       return false;
     }
     setErro("");
@@ -95,28 +90,8 @@ function CustomerRegister() {
           value={cpf}
           onChange={(e) => setCpf(e.target.value)}
           placeholder="000.000.000-00"
-          className="border border-gray-300 rounded-md p-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-900 w-full"
+          className="border border-gray-300 rounded-md p-2 px-4 mb-1 focus:outline-none focus:ring-2 focus:ring-green-900 w-full"
         />
-
-        <label htmlFor="mesa" className="font-semibold text-start">
-          Mesa:
-        </label>
-        <select
-          name="mesa"
-          id="mesa"
-          value={mesa}
-          onChange={(e) => setMesa(e.target.value)}
-          className="border border-gray-300 rounded-md p-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-900 w-full"
-        >
-          <option value="">Selecione a mesa</option>
-          <option value="01">Mesa 01</option>
-          <option value="02">Mesa 02</option>
-          <option value="03">Mesa 03</option>
-          <option value="04">Mesa 04</option>
-          <option value="05">Mesa 05</option>
-          <option value="06">Mesa 06</option>
-          <option value="07">Mesa 07</option>
-        </select>
         {erro && <p>{erro}</p>}
         <button
           type="submit"
