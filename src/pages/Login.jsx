@@ -110,9 +110,12 @@ function Login() {
                 className="bg-[#556B2F] w-full text-white rounded-md p-2 mb-4 px-4 mt-4 hover:bg-[#556B2F] focus:outline-none focus:ring-2 focus:ring-[#556B2F]">
                     Continuar
                 </button>
+                <a onClick={() => navigate("/cadastro")} className="text-[#556B2F] hover:underline hover:text-[#000000] cursor-pointer text-center w-full">
+                    Não tem uma conta? Cadastre-se
+                </a>
             </form>
         </div>
     );
 }
 
-export default Login
+export default Login;
