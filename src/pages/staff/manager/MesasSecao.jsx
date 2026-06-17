@@ -58,3 +58,5 @@ function MesasSecao() {
         </div>
     )
 }
+
+export default MesasSecao;

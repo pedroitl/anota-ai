@@ -5,7 +5,6 @@ function CustomerRegister() {
     const [nomeCompleto, setNomeCompleto] = useState('');
     const [telefone, setTelefone] = useState('');
     const [cpf, setCpf] = useState('');
-    const [mesa, setMesa] = useState('');
 
     const [erro, setErro] = useState("");
     const navigate = useNavigate();
@@ -31,10 +30,6 @@ function CustomerRegister() {
             setErro("O CPF deve conter 11 caracteres.");
             return false;
         }
-        if (mesa === "") {
-            setErro("A seleção de mesa é obrigatória.");
-            return false;
-        }
         setErro("");
         return true ;
     }
@@ -42,7 +37,7 @@ function CustomerRegister() {
     function handleSubmit(e) {
         e.preventDefault();
         if (validar()) {
-             navigate("/home-cliente");
+             navigate("/home-cliente/cardapio");
         }
     };
 
@@ -63,17 +58,6 @@ function CustomerRegister() {
                 className="border border-gray-300 rounded-md p-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-900 w-full" />
 
                 <label htmlFor="mesa" className="font-semibold text-start">Mesa:</label>
-                <select name="mesa" id="mesa" value={mesa} 
-                onChange={(e) => setMesa(e.target.value)} className="border border-gray-300 rounded-md p-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-900 w-full">
-                    <option value="">Selecione a mesa</option>
-                    <option value="01">Mesa 01</option>
-                    <option value="02">Mesa 02</option>
-                    <option value="03">Mesa 03</option>
-                    <option value="04">Mesa 04</option>
-                    <option value="05">Mesa 05</option>
-                    <option value="06">Mesa 06</option>
-                    <option value="07">Mesa 07</option>
-                </select>
                 {erro && <p>{erro}</p>}
                 <button onClick={validar} type="submit"
                     className="bg-[#556B2F] w-full text-white rounded-md p-2 mb-4 px-4 mt-4 hover:bg-[#556B2F] focus:outline-none focus:ring-2 focus:ring-[#556B2F]">

@@ -16,7 +16,7 @@ function App() {
     <>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/home-cliente" element={ <CustomerRegister />} />
+          <Route path="/cadastro" element={ <CustomerRegister />} />
            
           <Route path="/login" element={<Login />} />
           <Route path="/home-cliente/cardapio" element={
