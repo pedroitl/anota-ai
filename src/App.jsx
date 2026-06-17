@@ -6,7 +6,6 @@ import Mesas from './pages/staff/waiter/Mesas';
 import CustomerRegister from './pages/customer/CustomerRegister';
 import Home from './pages/Home';
 import Login from './pages/Login';
-import HomeStaff from './pages/staff/HomeStaff';
 import PedidosCozinha from './pages/staff/kitchen/PedidosCozinha';
 import FinalizarMesa from './pages/staff/cashier/FinalizarMesa';
 import Relatorios from './pages/staff/manager/Relatorios';
@@ -19,7 +18,6 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/home-cliente" element={ <CustomerRegister />} />
            
-          <Route path="/home-funcionario" element={<HomeStaff />} />
           <Route path="/login" element={<Login />} />
           <Route path="/home-cliente/cardapio" element={
             <ProtectedRoutes allowedRoles="CLIENT">
