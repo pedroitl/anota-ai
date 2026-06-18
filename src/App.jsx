@@ -4,7 +4,7 @@ import ProtectedRoutes from './components/ProtectedRoutes';
 import Cardapio from './components/Cardapio';
 import Mesas from './pages/staff/waiter/Mesas';
 import CustomerRegister from './pages/customer/CustomerRegister';
-import Home from './pages/Home';
+import Paths from './pages/Paths';
 import Login from './pages/Login';
 import PedidosCozinha from './pages/staff/kitchen/PedidosCozinha';
 import FinalizarMesa from './pages/staff/cashier/FinalizarMesa';
@@ -16,7 +16,7 @@ function App() {
   return (
     <>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Paths />} />
           <Route path="/cadastro" element={ <CustomerRegister />} />
           <Route path="/secao" element={<MesasSecao />} />
            
