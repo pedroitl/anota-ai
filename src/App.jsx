@@ -11,6 +11,7 @@ import FinalizarMesa from './pages/staff/cashier/FinalizarMesa';
 import Relatorios from './pages/staff/manager/Relatorios';
 import Home from './pages/Home';
 import Pedidos from './pages/staff/waiter/Pedidos';
+import Notificacoes from './pages/staff/waiter/Notificacoes';
 
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
             </ProtectedRoutes>} />
 
           <Route path="/home-funcionario/waiter/pedidos" element={<Pedidos />} />
+          <Route path="/home-funcionario/waiter/notificacoes" element={<Notificacoes />} />
           <Route path="/home-funcionario/waiter/mesas" element={
               <Mesas />} />
           <Route path="/home-funcionario/kitchen/pedidos" element={
