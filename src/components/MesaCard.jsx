@@ -18,10 +18,8 @@ function MesaCard({numero, status, onClick}) {
 
 
     return(
-        <div className={`${getCorStatus(status)} rounded-2xl px-4 cursor-pointer hover:opacity-90 
-            transition-opacity flex flex-col items-center justify-center h-44 w-full shadow-md text-white`}  onClick={onClick}>
+        <div className={`${getCorStatus(status)} flex justify-center items-center aspect-square rounded-xl cursor-pointer hover:opacity-90 shadow-md text-white`}  onClick={onClick}>
             <p className="text-3xl font-bold">{numero}</p>
-            <p className="text-xl sm:text-sm mt-3 text-center wrap-break-word max-w-full leading-tight font-light ">{status}</p>
         </div>
     );
 

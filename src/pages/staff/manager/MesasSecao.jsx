@@ -1,59 +1,18 @@
+import SecaoCard from "../../../components/SecaoCard";
+
 function MesasSecao() {
     return (
-        <div>
-            <div>
-                <h1>Lounge</h1>
-                <div>
-                    <p>Mesa 1</p>
-                    <p>Mesa 2</p>
-                    <p>Mesa 3</p>
-                    <p>Mesa 4</p>
-                </div>
+        <div className="flex flex-col items-center justify-center min-h-screen bg-[#f5f5f5] w-full box-border overflow-x-hidden p-4 gap-7 sm:p-8">
+            <div className="mb-8 flex flex-col items-center justify-center gap-2">
+                <h1 className="text-3xl font-bold text-center">Mesas</h1>
+                <p className="text-sm text-gray-600 italic">
+                    Status: Verde = Livre, Vermelho = Ocupada, Laranja = Aguardando Pedido, Amarelo = Novo Pedido, Cinza = Fechamento Solicitado.
+                </p>
             </div>
-            <div>
-                <h1>Interna Porta</h1>
-                <div>
-                    <p>Mesa 5</p>
-                    <p>Mesa 6</p>
-                    <p>Mesa 7</p>
-                    <p>Mesa 8</p>
-                </div>
-            </div>
-            <div>
-                <h1>Interna Esquerda</h1>
-                <div>
-                    <p>Mesa 9</p>
-                    <p>Mesa 10</p>
-                    <p>Mesa 11</p>
-                    <p>Mesa 12</p>
-                </div>
-            </div>
-            <div>
-                <h1>Interna Direita</h1>
-                <div>
-                    <p>Mesa 13</p>
-                    <p>Mesa 14</p>
-                    <p>Mesa 15</p>
-                    <p>Mesa 16</p>
-                </div>
-            </div>
-            <div>
-                <h1>Lounge 1 andar</h1>
-                <div>
-                    <p>Mesa 17</p>
-                    <p>Mesa 18</p>
-                    <p>Mesa 19</p>
-                    <p>Mesa 20</p>
-                </div>
-            </div>
-            <div>
-                <h1>Interna 1 andar</h1>
-                <div>
-                    <p>Mesa 21</p>
-                    <p>Mesa 22</p>
-                    <p>Mesa 23</p>
-                    <p>Mesa 24</p>
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-8 w-full">
+                <SecaoCard nome="Lounge" mesas={[{numero: 1, status: 'Livre'}, {numero: 2, status: 'Ocupada'}, {numero: 3, status: 'Livre'}, {numero: 4, status: 'Ocupada'}]} />
+                <SecaoCard nome="Area VIP" mesas={[{numero: 3, status: 'Aguardando Pedido'}, {numero: 4, status: 'Novo Pedido'}, {numero: 5, status: 'Livre'}, {numero: 6, status: 'Ocupada'}]} />
+                <SecaoCard nome="Interna" mesas={[{numero: 5, status: 'Fechamento Solicitado'}, {numero: 6, status: 'Livre'}, {numero: 7, status: 'Ocupada'}, {numero: 8, status: 'Livre'}]} />
             </div>
         </div>
     )
