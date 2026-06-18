@@ -10,6 +10,7 @@ import PedidosCozinha from './pages/staff/kitchen/PedidosCozinha';
 import FinalizarMesa from './pages/staff/cashier/FinalizarMesa';
 import Relatorios from './pages/staff/manager/Relatorios';
 import Home from './pages/Home';
+import Pedidos from './pages/staff/waiter/Pedidos';
 
 
 function App() {
@@ -25,6 +26,8 @@ function App() {
             <ProtectedRoutes allowedRoles="CLIENT">
               <Cardapio />
             </ProtectedRoutes>} />
+
+          <Route path="/home-funcionario/waiter/pedidos" element={<Pedidos />} />
           <Route path="/home-funcionario/waiter/mesas" element={
               <Mesas />} />
           <Route path="/home-funcionario/kitchen/pedidos" element={
