@@ -1,14 +1,9 @@
-function Rodape() {
-    function Operador() {
-        const operador = JSON.parse(localStorage.getItem("user"));
-        return operador.email;
-    }
-
+function Footer() {
     return (
-        <footer className="w-full max-w-5xl mx-auto border-t border-gray-200 mt-12 pt-4 flex flex-col items-centersm:flex-row justify-between items-center gap-2 text-xs text-gray-500">
-            <p>Atualizado em tempo real | Operador: <span className="font-semibold">{Operador()}</span></p>
+        <footer className="w-full max-w-5xl mx-auto px-4 border-t border-gray-200 mt-20 pt-6 pb-6 text-center text-sm text-gray-600">
+            <p>© 2026 Anota AI • Transformando a gestão de restaurantes</p>
         </footer>
     );
 }
 
-export default Rodape;
+export default Footer;

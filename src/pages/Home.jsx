@@ -1,6 +1,7 @@
 ﻿import BannerHome from '../assets/banner-home.svg';
 import BannerSide from '../assets/banner-home-side.svg';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
+import Footer from '../components/Footer'; 
 
 function Home() {
     const navigate = useNavigate();
@@ -85,7 +86,9 @@ function Home() {
                     </ul>
                 </div>
             </div>
+            <Footer />
         </div>
+        
     );
 }
 

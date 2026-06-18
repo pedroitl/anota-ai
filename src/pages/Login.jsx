@@ -21,7 +21,7 @@ function Login() {
                 headers: {"Content-type": "application/json"},
                 body: JSON.stringify({email: email, password: senha})
             })
-            if(!response){
+            if(!response.ok){
                 throw new Error("Usuário ou senha invalidos")
             }
             const data = await response.json();
