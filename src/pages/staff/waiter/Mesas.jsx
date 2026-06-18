@@ -7,7 +7,8 @@ function Mesas(){
     const [secoes, setSecoes] = useState([
         {nome: 'Lounge', mesas: [{numero: 1, status: 'Livre'}, {numero: 2, status: 'Ocupada'}, {numero: 7, status: 'Livre'}, {numero: 8, status: 'Ocupada'}]},
         {nome: 'Area VIP', mesas: [{numero: 3, status: 'Aguardando Pedido'}, {numero: 4, status: 'Novo Pedido'}, {numero: 9, status: 'Livre'}, {numero: 10, status: 'Ocupada'}]},
-        {nome: 'Interna', mesas: [{numero: 5, status: 'Fechamento Solicitado'}, {numero: 6, status: 'Livre'}, {numero: 11, status: 'Ocupada'}, {numero: 12, status: 'Livre'}]}
+        {nome: 'Interna', mesas: [{numero: 5, status: 'Fechamento Solicitado'}, {numero: 6, status: 'Livre'}, {numero: 11, status: 'Ocupada'}, {numero: 12, status: 'Livre'}]},
+        {nome: 'Externa', mesas: [{numero: 13, status: 'Livre'}, {numero: 14, status: 'Ocupada'}, {numero: 15, status: 'Aguardando Pedido'}, {numero: 16, status: 'Novo Pedido'}]}
     ]);
 
     const [modalAberto,setModalAberto] = useState(false);
@@ -49,7 +50,7 @@ function Mesas(){
                         Gerenciamento de Mesas</p>
             </header>
                        
-            <main className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 w-full">
+            <main className="grid grid-cols-1 p-20 sm:grid-cols-2 md:grid-cols-3 gap-8 sm:gap-10">
                 {secoes.map((secao) => (
                     <SecaoCard
                         key={secao.nome}
