@@ -9,7 +9,6 @@ import Login from './pages/Login';
 import PedidosCozinha from './pages/staff/kitchen/PedidosCozinha';
 import FinalizarMesa from './pages/staff/cashier/FinalizarMesa';
 import Relatorios from './pages/staff/manager/Relatorios';
-import MesasSecao from './pages/staff/manager/MesasSecao';
 import Home from './pages/Home';
 
 
@@ -19,7 +18,6 @@ function App() {
         <Routes>
           <Route path="/" element={<Paths />} />
           <Route path="/cadastro" element={ <CustomerRegister />} />
-          <Route path="/secao" element={<MesasSecao />} />
           <Route path="/home" element={<Home />} />
            
           <Route path="/login" element={<Login />} />

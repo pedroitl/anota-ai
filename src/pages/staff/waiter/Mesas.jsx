@@ -1,6 +1,7 @@
 import { useState} from "react";
 import Logo from "../../../components/UI/Logo";
 import SecaoCard from "../../../components/SecaoCard";
+import Footer from "../../../components/Footer";
 
 function Mesas(){   
     const [secoes, setSecoes] = useState([
@@ -126,7 +127,7 @@ function Mesas(){
             )}
 
 
-            {/* <Rodape/> */}
+            <Footer />
         </div>
     )
 }
