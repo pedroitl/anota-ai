@@ -1,24 +1,24 @@
+const STATUS_COLORS = {
+  LIVRE: "#556B2F",
+  OCUPADA: "#7A1F2B",
+  AGUARDANDO_PEDIDO: "#B85C38",
+  NOVO_PEDIDO: "#C8A44D",
+  FECHAMENTO_SOLICITADO: "#4E5047"
+};
+
 function MesaCard({ numero, status, onClick }) {
-  const statusRecebido = String(status ?? "").trim();
-
-  const coresPorStatus = {
-    LIVRE: "#556B2F",
-    OCUPADA: "#7A1F2B",
-    AGUARDANDO_PEDIDO: "#B85C38",
-    NOVO_PEDIDO: "#C8A44D",
-    FECHAMENTO_SOLICITADO: "#4E5047"
-  };
-
-  const cor = coresPorStatus[statusRecebido] || "#9CA3AF";
+  const statusNormalizado = String(status ?? "").trim();
+  const cor = STATUS_COLORS[statusNormalizado] ?? "#9CA3AF";
 
   return (
-    <div
-      style={{ backgroundColor: cor }}
-      className="flex justify-center items-center aspect-square rounded-xl cursor-pointer hover:opacity-90 shadow-md text-white"
+    <button
+      type="button"
       onClick={onClick}
+      className="flex justify-center items-center aspect-square rounded-xl shadow-md text-white hover:opacity-90 transition-opacity"
+      style={{ backgroundColor: cor }}
     >
-      <p className="text-3xl font-bold">{numero}</p>
-    </div>
+      <span className="text-3xl font-bold">{numero}</span>
+    </button>
   );
 }
 
