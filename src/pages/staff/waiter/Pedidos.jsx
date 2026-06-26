@@ -101,6 +101,22 @@ function Pedidos() {
         </Link>
       </header>
 
+    <div className="max-w-7xl mx-auto mb-6">
+      <label className="block mb-2 font-semibold">Filtrar por status</label>
+        <select
+          value={filtroStatus}
+          onChange={(e) => setFiltroStatus(e.target.value)}
+          className="border border-gray-300 rounded-lg px-4 py-2"
+        >
+        <option value="">Todos</option>
+        <option value="NOVO_PEDIDO">Novo Pedido</option>
+        <option value="PEDIDO_EM_PREPARO">Pedido em Preparo</option>
+        <option value="PEDIDO_CONCLUIDO">Pedido Concluído</option>
+        <option value="PEDIDO_CANCELADO">Pedido Cancelado</option>
+        <option value="ENTREGUE">Entregue</option>
+      </select>
+    </div>
+
       <main className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {pedidoFiltrados.map((pedido) => {
           const statusInfo = getStatusInfo(pedido.statusPedido);
