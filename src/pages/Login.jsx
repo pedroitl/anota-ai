@@ -50,7 +50,7 @@ function Login() {
                     break;
 
                 case "DESK":
-                    navigate("/home-funcionario/cashier/finalizar");
+                    navigate("/home-funcionario/cashier/mesas");
                     break;
 
                 default:

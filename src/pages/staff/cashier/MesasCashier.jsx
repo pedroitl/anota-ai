@@ -65,58 +65,38 @@ function Mesas() {
     setMesaSelecionada(null);
   }
 
-  async function mudarStatus(numeroMesa, novoStatus) {
-    const mesa = mesas.find((m) => m.numero === numeroMesa);
-
-    if (!mesa) return;
-
-    try {
-      const response = await fetch(
-        `http://localhost:8080/mesas/${mesa.id}/status`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            statusMesa: novoStatus,
-          }),
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error(`Erro ao atualizar status: ${response.status}`);
-      }
-
-      await listarMesas();
-      fecharModal();
-    } catch (error) {
-      console.error("Erro ao atualizar status da mesa:", error);
-    }
-  }
-
   const mesaAtual = mesas.find((mesa) => mesa.numero === mesaSelecionada);
+
+  const secaoAtual =
+    secoes.find((secao) =>
+      secao.mesas.some((mesa) => mesa.numero === mesaSelecionada),
+    )?.nome || "Sem seção";
+
+    function formatarStatusMesa(status) {
+  if (!status) return "-";
+
+  return status
+    .toLowerCase()
+    .split("_")
+    .map((palavra) => palavra.charAt(0).toUpperCase() + palavra.slice(1))
+    .join(" ");
+}
+
+
 
   return (
     <div className="min-h-screen bg-[#f5f5f5] w-full box-border overflow-x-hidden flex flex-col justify-between p-4 gap-7 sm:p-8">
       <header className="mb-8 flex flex-col items-center justify-center">
         <Logo />
         <p className="text-xl sm:text-2xl font-bold text-gray-700 text-center mt-2">
-          Gerenciamento de Mesas
+          Visualização de mesas
         </p>
 
         <Link
-          to="/home-funcionario/waiter/pedidos"
+          to="/home-funcionario/cashier/finalizar"
           className="bg-gray-800 text-white px-4 py-2 rounded"
         >
-          Ir Para Pedidos
-        </Link>
-
-        <Link
-          to="/home-funcionario/waiter/notificacoes"
-          className="bg-gray-800 text-white px-4 py-2 rounded"
-        >
-          Ir para notificaçoes
+          Ir para revisão e fechamento
         </Link>
       </header>
 
@@ -146,56 +126,34 @@ function Mesas() {
 
             <h2 className="text-2xl font-bold mb-2">Mesa {mesaSelecionada}</h2>
 
-            <p className="text-gray-600 mb-6">
-              Status atual:{" "}
-              <span className="font-semibold capitalize">
-                {mesaAtual?.status}
-              </span>
-            </p>
+            <div className="space-y-3">
+              <div className="bg-gray-100 rounded-lg p-3">
+                <p className="text-sm text-gray-500">Status atual</p>
+                <p className="font-semibold text-gray-800">
+                  {formatarStatusMesa(mesaAtual?.status)}
+                </p>
+              </div>
 
-            <div className="flex flex-col gap-3 mb-6">
+              <div className="bg-gray-100 rounded-lg p-3">
+                <p className="text-sm text-gray-500">Capacidade</p>
+                <p className="font-semibold text-gray-800">
+                  {mesaAtual?.capacidade || "-"} pessoas
+                </p>
+              </div>
+
+              <div className="bg-gray-100 rounded-lg p-3">
+                <p className="text-sm text-gray-500">Seção</p>
+                <p className="font-semibold text-gray-800">{secaoAtual}</p>
+              </div>
+            </div>
+
+            <div className="mt-6">
               <button
                 type="button"
-                className="bg-[#556B2F] text-white px-4 py-3 rounded-lg hover:bg-green-600 transition-colors font-medium"
-                onClick={() => mudarStatus(mesaSelecionada, "LIVRE")}
+                onClick={fecharModal}
+                className="w-full bg-gray-800 text-white px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors font-medium"
               >
-                Marcar como Livre
-              </button>
-
-              <button
-                type="button"
-                className="bg-[#7A1F2B] text-white px-4 py-3 rounded-lg hover:bg-red-600 transition-colors font-medium"
-                onClick={() => mudarStatus(mesaSelecionada, "OCUPADA")}
-              >
-                Marcar como Ocupada
-              </button>
-
-              <button
-                type="button"
-                className="bg-[#B85C38] text-white px-4 py-3 rounded-lg hover:bg-orange-500 transition-colors font-medium"
-                onClick={() =>
-                  mudarStatus(mesaSelecionada, "AGUARDANDO_PEDIDO")
-                }
-              >
-                Aguardando Pedido
-              </button>
-
-              <button
-                type="button"
-                className="bg-[#C8A44D] text-white px-4 py-3 rounded-lg hover:bg-yellow-400 transition-colors font-medium"
-                onClick={() => mudarStatus(mesaSelecionada, "NOVO_PEDIDO")}
-              >
-                Novo Pedido
-              </button>
-
-              <button
-                type="button"
-                className="bg-[#4E5047] text-white px-4 py-3 rounded-lg hover:bg-gray-600 transition-colors font-medium"
-                onClick={() =>
-                  mudarStatus(mesaSelecionada, "FECHAMENTO_SOLICITADO")
-                }
-              >
-                Fechamento Solicitado
+                Fechar
               </button>
             </div>
           </div>
