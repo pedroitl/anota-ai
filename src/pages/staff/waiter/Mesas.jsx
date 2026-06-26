@@ -2,8 +2,13 @@ import { useEffect, useMemo, useState } from "react";
 import Logo from "../../../components/UI/Logo";
 import SecaoCard from "../../../components/SecaoCard";
 import Footer from "../../../components/Footer";
+import { Link } from "react-router-dom";
 
 function Mesas() {
+
+  
+
+
   const [secoes, setSecoes] = useState([]);
   const [modalAberto, setModalAberto] = useState(false);
   const [mesaSelecionada, setMesaSelecionada] = useState(null);
@@ -103,8 +108,18 @@ function Mesas() {
         <p className="text-xl sm:text-2xl font-bold text-gray-700 text-center mt-2">
           Gerenciamento de Mesas
         </p>
+
+        <Link to= "/home-funcionario/waiter/pedidos" className="bg-gray-800 text-white px-4 py-2 rounded">
+          Ir Para Pedidos
+      </Link>
+
+      <Link to="/home-funcionario/waiter/notificacoes"  className="bg-gray-800 text-white px-4 py-2 rounded">
+        Ir para notificaçoes
+        </Link>
+
       </header>
 
+      
       <main className="grid grid-cols-1 p-6 sm:grid-cols-2 md:grid-cols-3 gap-8 sm:gap-10">
         {secoes.map((secao) => (
           <SecaoCard

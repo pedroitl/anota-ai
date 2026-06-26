@@ -30,8 +30,7 @@ function App() {
 
           <Route path="/home-funcionario/waiter/pedidos" element={<Pedidos />} />
           <Route path="/home-funcionario/waiter/notificacoes" element={<Notificacoes />} />
-          <Route path="/home-funcionario/waiter/mesas" element={
-              <Mesas />} />
+          <Route path="/home-funcionario/waiter/mesas" element={<Mesas />} />
           <Route path="/home-funcionario/kitchen/pedidos" element={
             <ProtectedRoutes allowedRoles="KITCHEN">
               <PedidosCozinha />

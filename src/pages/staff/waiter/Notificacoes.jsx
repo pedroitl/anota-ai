@@ -1,51 +1,71 @@
 import Logo from "../../../components/UI/Logo";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { data, Link } from "react-router-dom";
+
 
 function Notificacoes() {
-  const [notificacoes, setNotificacoes] = useState([
-    {
-      id: 1,
-      tipo: "ATENDIMENTO",
-      mensagem: "Mesa 05 solicitou atendimento",
-      lida: false,
-      dataHora: "17/06/2026 19:30",
-    },
-    {
-      id: 2,
-      tipo: "PEDIDO_PRONTO",
-      mensagem: "Pedido da Mesa 03 está pronto",
-      lida: false,
-      dataHora: "17/06/2026 19:25",
-    },
-    {
-      id: 3,
-      tipo: "FECHAMENTO",
-      mensagem: "Mesa 08 solicitou fechamento",
-      lida: true,
-      dataHora: "17/06/2026 19:10",
-    },
-    {
-      id: 4,
-      tipo: "ATENDIMENTO",
-      mensagem: "Mesa 02 solicitou atendimento",
-      lida: false,
-      dataHora: "17/06/2026 19:35",
-    },
-    {
-      id: 5,
-      tipo: "PEDIDO_PRONTO",
-      mensagem: "Pedido da Mesa 07 está pronto",
-      lida: true,
-      dataHora: "17/06/2026 19:20",
-    },
-    {
-      id: 6,
-      tipo: "FECHAMENTO",
-      mensagem: "Mesa 01 solicitou fechamento",
-      lida: false,
-      dataHora: "17/06/2026 19:40",
-    },
-  ]);
+  const [notificacoes, setNotificacoes] = useState([]);
+
+   useEffect( () => {
+      listarNotificacoes();
+    }, []);
+
+    async function listarNotificacoes() {
+    try {
+      const response = await fetch("http://localhost:8080/notificacoes")
+
+      if(!response.ok){
+        throw new Error("Erro ao buscar notificacao!");
+      }
+
+      const data = await response.json();
+      setNotificacoes(data);
+
+    } catch(error){
+      console.error(error)
+    }
+  }
+
+  async function marcarNotificacaoComoLida(idNotificacao) {
+    try{
+      const response = await fetch(`http://localhost:8080/notificacoes/${idNotificacao}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json"
+        },
+      }
+    );
+
+    console.log("status response:", response.status);
+
+      if(!response.ok){
+        throw new Error("erro ao encontrar notificacao!")
+      }
+      await listarNotificacoes();
+
+    } catch(error){
+      console.log(error)
+    }
+  }
+
+  function formatarDataHora(dataString){
+    
+    if(!dataString) return "-";
+
+    const data = new Date(dataString)
+
+    return data.toLocaleString("pt-BR",{
+      day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false
+    });
+
+
+  }
+
 
   function getTipoInfo(tipo) {
     switch (tipo) {
@@ -74,13 +94,6 @@ function Notificacoes() {
         };
     }
   }
-
-  function marcarComoLida(id) {
-    setNotificacoes(notificacoes.map(notificacao => 
-      notificacao.id === id ? { ...notificacao, lida: true } : notificacao
-    ));
-  }
-
   return (
     <div className="min-h-screen w-full p-4 sm:p-8">
       <header className="flex flex-col items-center gap-2">
@@ -88,11 +101,19 @@ function Notificacoes() {
         <h1 className="text-center text-lg md:text-2xl font-bold">
           Notificações
         </h1>
+
+        <Link to="/home-funcionario/waiter/mesas"  className="bg-gray-800 text-white px-4 py-2 rounded">
+        Ir para mesas
+        </Link>
+
+        <Link to= "/home-funcionario/waiter/pedidos" className="bg-gray-800 text-white px-4 py-2 rounded">
+          Ir Para Pedidos
+      </Link>
       </header>
       <main className="max-w-4xl mx-auto mt-6 flex flex-col gap-4">
         {notificacoes.map((notificacao) => {
             
-            const tipoInfo = getTipoInfo(notificacao.tipo);
+            const tipoInfo = getTipoInfo(notificacao.tipoNotificacao);
 
             return (
                 <div
@@ -105,10 +126,10 @@ function Notificacoes() {
                     {tipoInfo.texto}
                     </span>
                     <p className="font-semibold">{notificacao.mensagem}</p>
-                    <p className="text-sm text-gray-500">{notificacao.dataHora}</p>
+                    <p className="text-sm text-gray-500">{formatarDataHora(notificacao.dataHora)}</p>
                     {!notificacao.lida ? (
                         <button
-                            onClick={() => marcarComoLida(notificacao.id)}
+                            onClick={() => marcarNotificacaoComoLida(notificacao.id)}
                             className="mt-3 px-3 py-2 rounded-lg bg-[#556B2F] text-white text-sm hover:opacity-90"
                         >
                             Marcar como Lida

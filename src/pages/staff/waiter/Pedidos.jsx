@@ -1,106 +1,60 @@
+import { useEffect, useState } from "react";
 import Footer from "../../../components/Footer";
 import Logo from "../../../components/UI/Logo";
+import { Link } from "react-router-dom";
 
 function Pedidos() {
-  const pedidos = [
-    {
-      id: 1,
-      mesa: 5,
-      itens: [
-        {
-          nome: "Pizza",
-          quantidade: 1,
+  const [pedidos,setPedidos] = useState([]);
+  const [filtroStatus, setFiltroStatus] = useState("")
+
+
+  useEffect( () => {
+    listarPedidos();
+  }, []);
+
+  async function listarPedidos() {
+    try {
+      const response = await fetch("http://localhost:8080/pedidos")
+
+      if(!response.ok){
+        throw new Error("erro ao buscar pedido!");
+      }
+
+      const data = await response.json();
+      setPedidos(data);
+
+    } catch(error){
+      console.error(error)
+    }
+  }
+
+  async function confirmarEntrega(idPedido) {
+    try{
+      const response = await fetch(`http://localhost:8080/pedidos/${idPedido}/status`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json"
         },
-        {
-          nome: "Coca-cola",
-          quantidade: 2,
-        },
-      ],
-      status: "PEDIDO_EM_PREPARO",
-    },
-    {
-      id: 2,
-      mesa: 3,
-      itens: [
-        {
-          nome: "Hambúrguer",
-          quantidade: 1,
-        },
-        {
-          nome: "Fritas",
-          quantidade: 1,
-        },
-      ],
-      status: "PEDIDO_CONCLUIDO",
-    },
-    {
-      id: 3,
-      mesa: 8,
-      itens: [
-        {
-          nome: "Salada",
-          quantidade: 1,
-        },
-        {
-          nome: "Suco",
-          quantidade: 1,
-        },
-      ],
-      status: "NOVO_PEDIDO",
-    },
-    {
-      id: 4,
-      mesa: 2,
-      itens: [
-        {
-          nome: "Lasanha",
-          quantidade: 1,
-        },
-        {
-          nome: "Vinho",
-          quantidade: 1,
-        },
-        {
-          nome: "Sobremesa",
-          quantidade: 1,
-        },
-      ],
-      status: "PEDIDO_CANCELADO",
-    },
-    {
-      id: 5,
-      mesa: 15,
-      itens: [
-        {
-          nome: "Sushi",
-          quantidade: 2,
-        },
-      ],
-      status: "PEDIDO_CONCLUIDO",
-    },
-    {
-      id: 6,
-      mesa: 10,
-      itens: [
-        {
-          nome: "Tacos",
-          quantidade: 3,
-        },
-      ],
-      status: "NOVO_PEDIDO",
-    },
-    {
-      id: 7,
-      mesa: 12,
-      itens: [
-        {
-          nome: "Curry",
-          quantidade: 1,
-        },
-      ],
-      status: "PEDIDO_EM_PREPARO",
-    },
-  ];
+        body: JSON.stringify({
+          statusPedido: "ENTREGUE"  
+        })
+      });
+
+      if(!response.ok){
+        throw new Error("erro ao atualizar!")
+      }
+
+      await listarPedidos();
+
+    } catch(error){
+      console.log(error)
+    }
+  }
+
+  const pedidoFiltrados = pedidos.filter((pedido) => {
+    if(!filtroStatus) return true;
+    return pedido.statusPedido === filtroStatus;
+  });
 
   function getStatusInfo(status) {
     switch (status) {
@@ -137,18 +91,26 @@ function Pedidos() {
       <header className="mb-8 flex flex-col items-center justify-center">
         <Logo />
         <h1 className="text-center text-lg md:text-2xl font-bold">Pedidos</h1>
+
+        <Link to="/home-funcionario/waiter/mesas"  className="bg-gray-800 text-white px-4 py-2 rounded">
+        Ir para mesas
+        </Link>
+
+        <Link to="/home-funcionario/waiter/notificacoes"  className="bg-gray-800 text-white px-4 py-2 rounded">
+        Ir para notificaçoes
+        </Link>
       </header>
 
       <main className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {pedidos.map((pedido) => {
-          const statusInfo = getStatusInfo(pedido.status);
+        {pedidoFiltrados.map((pedido) => {
+          const statusInfo = getStatusInfo(pedido.statusPedido);
 
           return (
             <div
               key={pedido.id}
               className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm"
             >
-              <h2 className="text-xl font-bold mb-2">Mesa {pedido.mesa}</h2>
+              <h2 className="text-xl font-bold mb-2">Mesa {pedido.numeroMesa}</h2>
 
               <span
                 className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${statusInfo.cor}`}
@@ -159,7 +121,7 @@ function Pedidos() {
               <ul className="list-disc list-inside mt-3">
                 {pedido.itens.map((item, index) => (
                   <li key={index} className="text-gray-700">
-                    {item.nome} x {item.quantidade}
+                    {item.nomeProduto} x {item.quantidade}
                   </li>
                 ))}
               </ul>
