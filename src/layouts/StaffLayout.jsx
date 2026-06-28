@@ -1,8 +1,13 @@
+import Sidebar from "../components/sidebar/Sidebar";
+import { Outlet } from "react-router-dom";
+
 function StaffLayout() {
   return (
     <div className="staff-layout">
-      <aside className="sidebar"></aside>
-      <main className="content"></main>
+      <Sidebar />
+      <main>
+        <Outlet />
+      </main>
     </div>
   );
 }

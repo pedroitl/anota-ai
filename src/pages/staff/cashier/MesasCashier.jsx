@@ -115,7 +115,7 @@ function Mesas() {
         <div className="fixed inset-0 z-50">
           <div className="absolute inset-0 bg-black/40" onClick={fecharModal} />
 
-          <div className="absolute right-0 top-0 h-full w-full sm:w-[380px] bg-white shadow-2xl p-6">
+          <div className="absolute right-0 top-0 h-full w-full sm:w-95 bg-white shadow-2xl p-6">
             <button
               type="button"
               onClick={fecharModal}

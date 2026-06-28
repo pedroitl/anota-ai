@@ -13,6 +13,7 @@ import Home from "./pages/Home";
 import Pedidos from "./pages/staff/waiter/Pedidos";
 import Notificacoes from "./pages/staff/waiter/Notificacoes";
 import MesasCashier from "./pages/staff/cashier/MesasCashier";
+import StaffLayout from "./layouts/StaffLayout";
 
 function App() {
   return (
@@ -32,12 +33,12 @@ function App() {
           }
         />
 
-        <Route path="/home-funcionario/waiter/pedidos" element={<Pedidos />} />
-        <Route
-          path="/home-funcionario/waiter/notificacoes"
-          element={<Notificacoes />}
-        />
-        <Route path="/home-funcionario/waiter/mesas" element={<Mesas />} />
+        <Route path="/home-funcionario/waiter" element={<StaffLayout />}>
+          <Route path="pedidos" element={<Pedidos />} />
+          <Route path="notificacoes" element={<Notificacoes />} />
+          <Route path="mesas" element={<Mesas />} />
+        </Route>
+
         <Route
           path="/home-funcionario/kitchen/pedidos"
           element={
@@ -46,6 +47,7 @@ function App() {
             </ProtectedRoutes>
           }
         />
+
         <Route
           path="/home-funcionario/cashier/mesas"
           element={
