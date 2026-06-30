@@ -19,6 +19,7 @@ function Sidebar() {
             </nav>
             <button>
                 <LogOut />
+            
                 <span>Sair</span>
             </button>
         </aside>
