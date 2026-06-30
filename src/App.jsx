@@ -38,9 +38,7 @@ function App() {
       <Route
         path="/home-cliente/cardapio"
         element={
-          <ProtectedRoutes allowedRoles="CLIENT">
             <Cardapio />
-          </ProtectedRoutes>
         }
       />
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { produtosMock } from "../mocks/produtosMock";
 
 function Cardapio() {
   const navigate = useNavigate();
@@ -7,27 +8,32 @@ function Cardapio() {
 
   const [produtos, setProdutos] = useState([]);
   useEffect(() => {
-  async function carregarProdutos() {
-    try {
-      const response = await fetch("http://localhost:8080/produtos");
+    async function carregarProdutos() {
+      try {
+        const response = await fetch("http://localhost:8080/produtos");
 
-      const data = await response.json();
+        if (!response.ok) {
+          throw new Error("Erro ao buscar produtos");
+        }
 
-      const produtosFormatados = data.map(produto => ({
-        ...produto,
-        quantidade: 0
-      }));
+        const data = await response.json();
 
-      setProdutos(produtosFormatados);
+        const produtosFormatados = data.map(produto => ({
+          ...produto,
+          quantidade: 0
+        }));
 
-    } catch (error) {
-      console.error("Erro ao carregar produtos:", error);
+        setProdutos(produtosFormatados);
+
+      } catch (error) {
+        console.warn("Backend indisponível. Usando produtos mockados.");
+
+        setProdutos(produtosMock)
+      }
     }
-    
-  }
+    carregarProdutos();
+  }, []);
 
-  carregarProdutos();
-}, []);
   function aumentar(id) {
     const novosProdutos = produtos.map(function (produto) {
       if (produto.id === id) {
@@ -60,10 +66,44 @@ function Cardapio() {
   function validaPedido() {
     setAbrirDialog(true);
   }
+
   function confirma(e) {
     e.preventDefault();
+
+    if (produtosSelecionados.length === 0) {
+      alert("Selecionar pelo menos um item para realizar o pedido!");
+      return
+    }
+
+    const novoPedido = {
+      id: Date.now(),
+      mesa: 1,
+      status: "NOVO",
+      origem: "CLIENT",
+      itens: produtosSelecionados.map(function (produto) {
+        return {
+          id: produto.id,
+          nome: produto.nome,
+          quantidade: produto.quantidade,
+          preco: produto.preco
+        };
+      }),
+      total: totalPedido,
+      criadoEm: new Date().toISOString(),
+    };
+
+    const pedidosSalvos = JSON.parse(localStorage.getItem("pedidos")) || [];
+
+    const pedidosAtualizados = [...pedidosSalvos, novoPedido];
+
+    localStorage.setItem("pedidos",JSON.stringify(pedidosAtualizados));
+
+    alert("Pedido enviado a cozinha!");
+
     navigate("/home-cliente");
+
   }
+
   const produtosSelecionados = produtos.filter(function (produto) {
     return produto.quantidade > 0;
   });
@@ -81,7 +121,7 @@ function Cardapio() {
         {produtos.map(function (produto) {
           return (
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden"
-            key={produto.id}>
+              key={produto.id}>
               <img
                 src={produto.imagemURL}
                 alt={produto.nome}
@@ -160,6 +200,7 @@ function Cardapio() {
 
             <form onSubmit={confirma} className="flex justify-end gap-3 mt-6">
               <button
+                type="button"
                 onClick={() => setAbrirDialog(false)}
                 className="bg-red-700 text-white px-4 py-2 rounded"
               >
