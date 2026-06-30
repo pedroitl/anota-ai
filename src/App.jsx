@@ -59,9 +59,7 @@ function App() {
       <Route
         path="/home-funcionario/kitchen"
         element={
-          <ProtectedRoutes allowedRoles="KITCHEN">
             <StaffLayout />
-          </ProtectedRoutes>
         }
       >
         <Route index element={<PedidosCozinha />} />
