@@ -1,6 +1,6 @@
 import Logo from "../../../components/UI/Logo";
 import { useEffect, useState } from "react";
-import { data, Link } from "react-router-dom";
+import { data } from "react-router-dom";
 
 
 function Notificacoes() {
@@ -102,13 +102,6 @@ function Notificacoes() {
           Notificações
         </h1>
 
-        <Link to="/home-funcionario/waiter/mesas"  className="bg-gray-800 text-white px-4 py-2 rounded">
-        Ir para mesas
-        </Link>
-
-        <Link to= "/home-funcionario/waiter/pedidos" className="bg-gray-800 text-white px-4 py-2 rounded">
-          Ir Para Pedidos
-      </Link>
       </header>
       <main className="max-w-4xl mx-auto mt-6 flex flex-col gap-4">
         {notificacoes.map((notificacao) => {

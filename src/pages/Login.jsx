@@ -35,7 +35,7 @@ function Login() {
                     break;
 
                 case "MANAGER":
-                    navigate("/home-funcionario/manager/relatorios");
+                    navigate("/home-funcionario/manager/dashboard");
                     break;
 
                 case "CLIENT":

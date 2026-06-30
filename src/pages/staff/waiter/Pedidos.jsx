@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Footer from "../../../components/Footer";
 import Logo from "../../../components/UI/Logo";
-import { Link } from "react-router-dom";
 
 function Pedidos() {
   const [pedidos,setPedidos] = useState([]);
@@ -92,13 +91,6 @@ function Pedidos() {
         <Logo />
         <h1 className="text-center text-lg md:text-2xl font-bold">Pedidos</h1>
 
-        <Link to="/home-funcionario/waiter/mesas"  className="bg-gray-800 text-white px-4 py-2 rounded">
-        Ir para mesas
-        </Link>
-
-        <Link to="/home-funcionario/waiter/notificacoes"  className="bg-gray-800 text-white px-4 py-2 rounded">
-        Ir para notificaçoes
-        </Link>
       </header>
 
     <div className="max-w-7xl mx-auto mb-6">
