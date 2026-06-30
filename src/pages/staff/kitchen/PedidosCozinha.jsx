@@ -1,18 +1,50 @@
 import Logo from "../../../components/UI/Logo";
 import { useEffect, useState } from "react";
 
+
+
 function PedidosCozinha() {
     const [pedidos, setPedidos] = useState([]);
 
     useEffect(() => {
         const pedidosSalvos = JSON.parse(localStorage.getItem("pedidos")) || [];
 
-        const pedidosNovos = pedidosSalvos.filter(function (pedido) {
-            return pedido.status === "NOVO";
+        const pedidosDaCozinha = pedidosSalvos.filter(function (pedido) {
+            return (
+                pedido.status === "NOVO" ||
+                pedido.status === "EM_PREPARO" ||
+                pedido.status === "PRONTO"
+            )
         })
 
-        setPedidos(pedidosNovos);
+        setPedidos(pedidosDaCozinha);
     }, []);
+
+    function atualizarStatusPedido(id, novoStatus) {
+        const pedidosSalvos = JSON.parse(localStorage.getItem("pedidos")) || [];
+
+        const pedidosAtualizados = pedidosSalvos.map(function (pedido) {
+            if (pedido.id === id) {
+                return {
+                    ...pedido,
+                    status: novoStatus,
+                };
+            }
+            return pedido;
+        })
+
+        localStorage.setItem("pedidos", JSON.stringify(pedidosAtualizados));
+
+        const pedidosDaCozinha = pedidosAtualizados.filter(function (pedido) {
+            return (
+                pedido.status === "NOVO" ||
+                pedido.status === "EM_PREPARO" ||
+                pedido.status === "PRONTO"
+            );
+        });
+
+        setPedidos(pedidosDaCozinha);
+    }
 
     return (
         <div className="min-h-screen bg-gray-100 p-6">
@@ -35,7 +67,7 @@ function PedidosCozinha() {
                                         Mesa {pedido.mesa}
                                     </h2>
                                     <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-bold">
-                                        Novo
+                                        {pedido.status}
                                     </span>
                                 </div>
                                 <div className="space-y-3">
@@ -55,6 +87,41 @@ function PedidosCozinha() {
                                     })
 
                                     }
+                                </div>
+                                <div className="mt-4 flex justify-between font-bold text-lg">
+                                    <span>Total</span>
+                                    <span>R$ {pedido.total.toFixed(2)}</span>
+                                </div>
+                                <div className="mt-5 flex justify-end">
+                                    {pedido.status === "NOVO" && (
+                                        <button
+                                            type="button"
+                                            onClick={() => atualizarStatusPedido(pedido.id, "EM_PREPARO")}
+                                            className="inline-flex items-center justify-center rounded-lg bg-blue-700 px-4 py-2 font-semibold text-white shadow-sm transition-colors duration-200 hover:bg-blue-800"
+                                        >
+                                            Aceitar Pedido
+                                        </button>
+                                    )}
+
+                                    {pedido.status === "EM_PREPARO" && (
+                                        <button
+                                            type="button"
+                                            onClick={() => atualizarStatusPedido(pedido.id, "PRONTO")}
+                                            className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-4 py-2 font-semibold text-white shadow-sm transition-colors duration-200 hover:bg-emerald-700"
+                                        >
+                                            Marcar como Pronto
+                                        </button>
+                                    )}
+
+
+                                    {pedido.status === "PRONTO" && (
+                                        <button
+                                            type="button"
+                                            className="inline-flex items-center justify-center rounded-lg bg-green-600 px-4 py-2 font-semibold text-white shadow-sm transition-colors duration-200 hover:bg-green-700"
+                                        >
+                                            Pedido Pronto
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         )
