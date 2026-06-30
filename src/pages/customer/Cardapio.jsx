@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { produtosMock } from "../mocks/produtosMock";
+import { produtosMock } from "../../mocks/produtosMock";
 
 function Cardapio() {
   const navigate = useNavigate();
@@ -78,7 +78,7 @@ function Cardapio() {
     const novoPedido = {
       id: Date.now(),
       mesa: 1,
-      status: "NOVO",
+      status: "NOVO_PEDIDO",
       origem: "CLIENT",
       itens: produtosSelecionados.map(function (produto) {
         return {
@@ -96,12 +96,45 @@ function Cardapio() {
 
     const pedidosAtualizados = [...pedidosSalvos, novoPedido];
 
-    localStorage.setItem("pedidos",JSON.stringify(pedidosAtualizados));
+    localStorage.setItem("pedidos", JSON.stringify(pedidosAtualizados));
 
     alert("Pedido enviado a cozinha!");
 
-    navigate("/home-cliente");
+    navigate("/home-cliente/cardapio");
 
+  }
+
+  function solicitarFechamentoMesa() {
+    const pedidosSalvos = JSON.parse(localStorage.getItem("pedidos")) || [];
+
+    const pedidosDaMesa = pedidosSalvos.filter(function (pedido) {
+      return pedido.mesa === 1;
+    });
+
+    const temPedidoEntregue = pedidosDaMesa.some(function (pedido) {
+      return pedido.status === "ENTREGUE";
+    });
+
+    if (!temPedidoEntregue) {
+      alert("Ainda não há pedidos entregues para solicitar o fechamento.");
+      return;
+    }
+
+    const pedidosAtualizados = pedidosSalvos.map(function (pedido) {
+      if (pedido.mesa === 1 && pedido.status === "ENTREGUE") {
+        return {
+          ...pedido,
+          status: "FECHAMENTO_SOLICITADO",
+          fechamentoSolicitadoEm: new Date().toISOString(),
+        };
+      }
+
+      return pedido;
+    });
+
+    localStorage.setItem("pedidos", JSON.stringify(pedidosAtualizados));
+
+    alert("Fechamento solicitado! Aguarde o caixa conferir a comanda.");
   }
 
   const produtosSelecionados = produtos.filter(function (produto) {
@@ -167,13 +200,21 @@ function Cardapio() {
           );
         })}
       </div>
-      <div className="flex justify-center mt-10">
+      <div className="flex justify-center gap-4 mt-10">
         <button
           type="button"
           className="bg-[#556B2F] text-white px-6 py-3 rounded-xl hover:bg-green-700"
           onClick={validaPedido}
         >
           Realizar Pedido
+        </button>
+
+        <button
+          type="button"
+          onClick={solicitarFechamentoMesa}
+          className="bg-red-800 text-white px-6 py-3 rounded-xl hover:bg-red-900 font-semibold"
+        >
+          Solicitar fechamento da mesa
         </button>
       </div>
       {abrirDialog && (

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import Logo from "../../../components/UI/Logo";
 import SecaoCard from "../../../components/SecaoCard";
 import Footer from "../../../components/Footer";
-import {useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function MesasCashier() {
   const [secoes, setSecoes] = useState([]);
@@ -37,6 +37,36 @@ function MesasCashier() {
     return Object.values(mapaSecoes);
   }
 
+  function carregarMesasDoLocalStorage() {
+    const pedidosSalvos = JSON.parse(localStorage.getItem("pedidos")) || [];
+
+    const pedidosComFechamento = pedidosSalvos.filter(function (pedido) {
+      return pedido.status === "FECHAMENTO_SOLICITADO";
+    });
+
+    const numerosDasMesas = [
+      ...new Set(
+        pedidosComFechamento.map(function (pedido) {
+          return pedido.mesa;
+        })
+      ),
+    ];
+
+    const mesasFormatadas = numerosDasMesas.map(function (numeroMesa) {
+      return {
+        id: numeroMesa,
+        numeroMesa: numeroMesa,
+        statusMesa: "FECHAMENTO_SOLICITADO",
+        capacidade: 4,
+        secao: "Caixa",
+      };
+    });
+
+    const secoesAgrupadas = agruparMesasPorSecao(mesasFormatadas);
+
+    setSecoes(secoesAgrupadas);
+  }
+
   useEffect(() => {
     async function fetchMesas() {
       try {
@@ -50,14 +80,15 @@ function MesasCashier() {
         const secoesAgrupadas = agruparMesasPorSecao(data);
         setSecoes(secoesAgrupadas);
       } catch (error) {
-        console.error("Erro ao listar mesas:", error);
+          console.warn("Backend indisponível. Carregando mesas pelo localStorage.");
+          carregarMesasDoLocalStorage();
       }
     }
 
     fetchMesas();
   }, []);
 
-  
+
 
   function formatarStatusMesa(status) {
     const statusMap = {
@@ -115,7 +146,7 @@ function MesasCashier() {
             onClick={fecharModal}
           />
 
-          <div className="absolute right-0 top-0 h-full w-full sm:w-96 bg-white shadow-2xl p-6">
+          <div className="absolute right-0 top-0 h-full w-full sm:w-96 bg-white border-l border-gray-200 shadow-xl p-6">
             <button
               type="button"
               onClick={fecharModal}
@@ -159,15 +190,15 @@ function MesasCashier() {
                     state: { mesa: mesaAtual },
                   })
                 }
-                className="w-full bg-[#556B2F] text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
+                className="w-full bg-[#556B2F] text-white px-4 py-3 rounded-lg hover:bg-[#4a5b28] transition-colors font-medium"
               >
-                Ir para revisão
+                Conferir comanda
               </button>
 
               <button
                 type="button"
                 onClick={fecharModal}
-                className="w-full bg-gray-800 text-white px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors font-medium"
+                className="w-full bg-[#7A1F2B] text-white px-4 py-3 rounded-lg hover:bg-[#651824] transition-colors font-medium"
               >
                 Fechar
               </button>

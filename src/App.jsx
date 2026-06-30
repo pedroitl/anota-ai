@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import ProtectedRoutes from "./components/ProtectedRoutes";
 
-import Cardapio from "./components/Cardapio";
+import Cardapio from "./pages/customer/Cardapio";
 import CustomerRegister from "./pages/customer/CustomerRegister";
 import Paths from "./pages/Paths";
 import Login from "./pages/Login";
@@ -45,9 +45,7 @@ function App() {
       <Route
         path="/home-funcionario/waiter"
         element={
-          <ProtectedRoutes allowedRoles="WAITER">
             <StaffLayout />
-          </ProtectedRoutes>
         }
       >
         <Route index element={<Mesas />} />
@@ -69,9 +67,7 @@ function App() {
       <Route
         path="/home-funcionario/cashier"
         element={
-          <ProtectedRoutes allowedRoles="DESK">
             <StaffLayout />
-          </ProtectedRoutes>
         }
       >
         <Route index element={<MesasCashier />} />
