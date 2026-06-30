@@ -13,26 +13,6 @@ function MesasCashier() {
 
   const mesas = useMemo(() => secoes.flatMap((secao) => secao.mesas), [secoes]);
 
-  useEffect(() => {
-    listarMesas();
-  }, []);
-
-  async function listarMesas() {
-    try {
-      const response = await fetch("http://localhost:8080/mesas");
-
-      if (!response.ok) {
-        throw new Error(`Erro ao buscar mesas: ${response.status}`);
-      }
-
-      const data = await response.json();
-      const secoesAgrupadas = agruparMesasPorSecao(data);
-      setSecoes(secoesAgrupadas);
-    } catch (error) {
-      console.error("Erro ao listar mesas:", error);
-    }
-  }
-
   function agruparMesasPorSecao(listaMesas) {
     const mapaSecoes = {};
 
@@ -56,6 +36,28 @@ function MesasCashier() {
 
     return Object.values(mapaSecoes);
   }
+
+  useEffect(() => {
+    async function fetchMesas() {
+      try {
+        const response = await fetch("http://localhost:8080/mesas");
+
+        if (!response.ok) {
+          throw new Error(`Erro ao buscar mesas: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const secoesAgrupadas = agruparMesasPorSecao(data);
+        setSecoes(secoesAgrupadas);
+      } catch (error) {
+        console.error("Erro ao listar mesas:", error);
+      }
+    }
+
+    fetchMesas();
+  }, []);
+
+  
 
   function formatarStatusMesa(status) {
     const statusMap = {
@@ -113,7 +115,7 @@ function MesasCashier() {
             onClick={fecharModal}
           />
 
-          <div className="absolute right-0 top-0 h-full w-full sm:w-[380px] bg-white shadow-2xl p-6">
+          <div className="absolute right-0 top-0 h-full w-full sm:w-96 bg-white shadow-2xl p-6">
             <button
               type="button"
               onClick={fecharModal}

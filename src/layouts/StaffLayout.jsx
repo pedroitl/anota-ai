@@ -1,13 +1,12 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import menu from "../components/sidebar/menus";
+import { LogOut } from "lucide-react";
 
 function StaffLayout() {
   const navigate = useNavigate();
-  const role = localStorage.getItem("role") || "";
+  const role = localStorage.getItem("role");
 
-  const menuFiltrado = menu.filter(
-    (item) => Array.isArray(item.roles) && item.roles.includes(role)
-  );
+  const menuFiltrado = menu.filter((item) => item.roles?.includes(role || ""));
 
   function handleLogout() {
     localStorage.removeItem("token");
@@ -18,7 +17,7 @@ function StaffLayout() {
 
   return (
     <div className="flex min-h-screen bg-[#f3f1eb] text-stone-800">
-      <aside className="w-[230px] border-r border-stone-200 bg-[#f7f4ee] px-5 py-6">
+      <aside className="w-57.5 border-r border-stone-200 bg-[#f7f4ee] px-5 py-6">
         <div className="mb-10">
           <h1 className="text-2xl font-semibold tracking-tight text-[#6f7c2f]">
             Anota Aí
@@ -32,13 +31,14 @@ function StaffLayout() {
               key={item.path}
               to={item.path}
               className={({ isActive }) =>
-                `rounded-md px-3 py-2 text-sm transition ${
+                `flex items-center gap-2 rounded-md px-3 py-2 text-sm transition ${
                   isActive
                     ? "bg-[#e7dfd2] text-stone-900"
                     : "text-stone-600 hover:bg-[#efe8dd] hover:text-stone-900"
                 }`
               }
             >
+              {item.icon ? <item.icon size={18} /> : null}
               {item.texto}
             </NavLink>
           ))}
@@ -46,8 +46,9 @@ function StaffLayout() {
 
         <button
           onClick={handleLogout}
-          className="mt-10 text-sm text-stone-500 transition hover:text-stone-800"
+          className="flex flex-row gap-3 mt-10 text-sm text-stone-500 transition hover:text-stone-800"
         >
+          <LogOut />
           Sair
         </button>
       </aside>
