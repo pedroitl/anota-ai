@@ -67,11 +67,6 @@ const menu = [
     texto: "Mesas",
     roles: ["DESK"],
   },
-  {
-    path: "/home-funcionario/cashier/finalizar",
-    texto: "Finalizar",
-    roles: ["DESK"],
-  },
 ];
 
 export default menu;
