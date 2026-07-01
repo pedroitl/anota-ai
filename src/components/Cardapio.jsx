@@ -1,33 +1,114 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { produtosMock } from "../../mocks/produtosMock";
 
 function Cardapio() {
+
   const navigate = useNavigate();
   const [abrirDialog, setAbrirDialog] = useState(false);
-
+  const [abrirMesaDialog, setAbrirMesaDialog] = useState(true);
+  const [mesaSelecionada, setMesaSelecionada] = useState("");
+  const [mesas, setMesas] = useState([]);
+  const [comanda, setComanda] = useState(null);
   const [produtos, setProdutos] = useState([]);
+
   useEffect(() => {
-  async function carregarProdutos() {
+    async function carregarProdutos() {
+      try {
+        const response = await fetch("http://localhost:8080/produtos",{
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error("Erro ao buscar produtos");
+        }
+
+        const data = await response.json();
+
+        const produtosFormatados = data.map(produto => ({
+          ...produto,
+          quantidade: 0
+        }));
+
+        setProdutos(produtosFormatados);
+
+      } catch (error) {
+        console.warn("Backend indisponível. Usando produtos mockados.");
+        setProdutos(produtosMock)
+      }
+    }
+    carregarProdutos();
+  }, []);
+
+  useEffect(() => {
+    async function carregarMesas() {
     try {
-      const response = await fetch("http://localhost:8080/produtos");
+      const response = await fetch(
+        "http://localhost:8080/mesas"
+      );
 
       const data = await response.json();
 
-      const produtosFormatados = data.map(produto => ({
-        ...produto,
-        quantidade: 0
-      }));
+      setMesas(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  carregarMesas();
+  }, []);
 
-      setProdutos(produtosFormatados);
+  async function confirmarMesa() {
+    try {
+
+      const verifica = await fetch(
+        `http://localhost:8080/comandas/mesa/${mesaSelecionada}`
+      );
+
+      if (verifica.ok) {
+
+        const comandaExistente = await verifica.json();
+
+        const resposta = window.confirm(
+          "Já existe uma comanda aberta para esta mesa. Você faz parte dela?"
+        );
+
+        if (resposta) {
+          setComanda(comandaExistente);
+          setAbrirMesaDialog(false);
+        }
+
+        return;
+      }
+
+      const response = await fetch(
+        "http://localhost:8080/comandas",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            numeroMesa: Number(mesaSelecionada)
+          })
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Erro ao abrir comanda");
+      }
+
+      const novaComanda = await response.json();
+
+      setComanda(novaComanda);
+      setAbrirMesaDialog(false);
 
     } catch (error) {
-      console.error("Erro ao carregar produtos:", error);
+      alert(error.message);
     }
-    
   }
 
-  carregarProdutos();
-}, []);
   function aumentar(id) {
     const novosProdutos = produtos.map(function (produto) {
       if (produto.id === id) {
@@ -60,10 +141,92 @@ function Cardapio() {
   function validaPedido() {
     setAbrirDialog(true);
   }
-  function confirma(e) {
+
+  async function confirma(e) {
     e.preventDefault();
-    navigate("/home-cliente");
+
+    if (produtosSelecionados.length === 0) {
+      alert("Selecionar pelo menos um item para realizar o pedido!");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+
+      const pedidoRequest = {
+        comandaId: comanda.id,
+        usuarioId: localStorage.getItem("usuario"),
+        observacao: "",
+        itens: produtosSelecionados.map(produto => ({
+          idProduto: produto.id,
+          quantidade: produto.quantidade
+        }))
+      };
+
+      const response = await fetch(
+        "http://localhost:8080/pedidos",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify(pedidoRequest)
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Erro ao enviar pedido");
+      }
+
+      const pedidoCriado = await response.json();
+
+      console.log(pedidoCriado);
+
+      alert("Pedido enviado à cozinha!");
+
+      navigate("/home-cliente/cardapio");
+
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao enviar pedido");
+    }
   }
+  
+
+  function solicitarFechamentoMesa() {
+    const pedidosSalvos = JSON.parse(localStorage.getItem("pedidos")) || [];
+
+    const pedidosDaMesa = pedidosSalvos.filter(function (pedido) {
+      return pedido.mesa === 1;
+    });
+
+    const temPedidoEntregue = pedidosDaMesa.some(function (pedido) {
+      return pedido.status === "ENTREGUE";
+    });
+
+    if (!temPedidoEntregue) {
+      alert("Ainda não há pedidos entregues para solicitar o fechamento.");
+      return;
+    }
+
+    const pedidosAtualizados = pedidosSalvos.map(function (pedido) {
+      if (pedido.mesa === 1 && pedido.status === "ENTREGUE") {
+        return {
+          ...pedido,
+          status: "FECHAMENTO_SOLICITADO",
+          fechamentoSolicitadoEm: new Date().toISOString(),
+        };
+      }
+
+      return pedido;
+    });
+
+    localStorage.setItem("pedidos", JSON.stringify(pedidosAtualizados));
+
+    alert("Fechamento solicitado! Aguarde o caixa conferir a comanda.");
+  }
+
   const produtosSelecionados = produtos.filter(function (produto) {
     return produto.quantidade > 0;
   });
@@ -72,7 +235,47 @@ function Cardapio() {
     return total + produto.preco * produto.quantidade;
   }, 0);
 
+  if (abrirMesaDialog) {
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+        <div className="bg-white p-6 rounded-xl w-96">
+          <h2 className="text-2xl font-bold mb-4">
+            Selecione sua mesa
+          </h2>
+
+          <select
+            className="w-full border p-2 rounded"
+            value={mesaSelecionada}
+            onChange={(e) =>
+              setMesaSelecionada(e.target.value)
+            }
+          >
+            <option value="">
+              Escolha uma mesa
+            </option>
+
+            {mesas.map((mesa) => (
+              <option
+                key={mesa.id}
+                value={mesa.numeroMesa}
+              >
+                Mesa {mesa.numeroMesa}
+              </option>
+            ))}
+          </select>
+
+          <button
+            className="w-full mt-4 bg-green-800 text-white p-2 rounded"
+            onClick={confirmarMesa}
+          >
+            Confirmar
+          </button>
+        </div>
+      </div>
+    );
+  }
   return (
+    
     <div className="">
       <h1 className="text-4xl font-bold text-center text-gray-800 mb-10">
         Cardápio
@@ -81,7 +284,7 @@ function Cardapio() {
         {produtos.map(function (produto) {
           return (
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden"
-            key={produto.id}>
+              key={produto.id}>
               <img
                 src={produto.imagemURL}
                 alt={produto.nome}
@@ -127,13 +330,21 @@ function Cardapio() {
           );
         })}
       </div>
-      <div className="flex justify-center mt-10">
+      <div className="flex justify-center gap-4 mt-10">
         <button
           type="button"
           className="bg-[#556B2F] text-white px-6 py-3 rounded-xl hover:bg-green-700"
           onClick={validaPedido}
         >
           Realizar Pedido
+        </button>
+
+        <button
+          type="button"
+          onClick={solicitarFechamentoMesa}
+          className="bg-red-800 text-white px-6 py-3 rounded-xl hover:bg-red-900 font-semibold"
+        >
+          Solicitar fechamento da mesa
         </button>
       </div>
       {abrirDialog && (
@@ -160,6 +371,7 @@ function Cardapio() {
 
             <form onSubmit={confirma} className="flex justify-end gap-3 mt-6">
               <button
+                type="button"
                 onClick={() => setAbrirDialog(false)}
                 className="bg-red-700 text-white px-4 py-2 rounded"
               >
