@@ -1,10 +1,5 @@
 const menu = [
   {
-    path: "/home-funcionario/manager/dashboard",
-    texto: "Dashboard",
-    roles: ["MANAGER"],
-  },
-  {
     path: "/home-funcionario/manager/pedidos",
     texto: "Pedidos",
     roles: ["MANAGER"],
@@ -29,17 +24,6 @@ const menu = [
     texto: "Caixa",
     roles: ["MANAGER"],
   },
-  {
-    path: "/home-funcionario/manager/relatorios",
-    texto: "Relatórios",
-    roles: ["MANAGER"],
-  },
-  {
-    path: "/home-funcionario/manager/configuracoes",
-    texto: "Configurações",
-    roles: ["MANAGER"],
-  },
-
   {
     path: "/home-funcionario/waiter/mesas",
     texto: "Mesas",

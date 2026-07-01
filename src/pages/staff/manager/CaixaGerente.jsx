@@ -92,12 +92,6 @@ function CaixaGerente() {
           </p>
         </div>
 
-        <button
-          onClick={listarPagamentos}
-          className="rounded-lg bg-[#93ad47] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#839a3f]"
-        >
-          Atualizar
-        </button>
       </header>
 
       {erro && (

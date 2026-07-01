@@ -121,12 +121,6 @@ function MesasGerente() {
           </p>
         </div>
 
-        <button
-          onClick={listarMesas}
-          className="w-fit rounded-lg bg-[#556B2F] px-4 py-2 text-sm font-medium text-white transition hover:opacity-90"
-        >
-          Atualizar
-        </button>
       </header>
 
       {erro && (

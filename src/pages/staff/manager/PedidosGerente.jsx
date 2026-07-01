@@ -29,7 +29,6 @@ function PedidosGerente() {
       }
 
       const data = await response.json();
-      console.log("pedidos:", data);
       setPedidos(Array.isArray(data) ? data : []);
     } catch (error) {
       setErro("Erro ao carregar pedidos.");
@@ -45,6 +44,11 @@ function PedidosGerente() {
 
   function obterStatus(pedido) {
     return pedido.statusPedido ?? "—";
+  }
+
+  function formatarStatusBonito(status) {
+    if (!status || status === "—") return "—";
+    return status.replace(/_/g, " ");
   }
 
   function calcularTotal(pedido) {
@@ -65,11 +69,8 @@ function PedidosGerente() {
   function proximoStatus(statusAtual) {
     const fluxo = [
       "NOVO_PEDIDO",
-      "RECEBIDO",
       "PEDIDO_EM_PREPARO",
-      "PEDIDO_CONCLUIDO",
-      "ENTREGUE",
-      "FINALIZADO",
+      "PEDIDO_PRONTO",
     ];
 
     const index = fluxo.indexOf(statusAtual);
@@ -136,46 +137,69 @@ function PedidosGerente() {
   function corStatus(status) {
     switch (status) {
       case "NOVO_PEDIDO":
-      case "RECEBIDO":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-[#efe4bf] text-[#7a5d14]";
       case "PEDIDO_EM_PREPARO":
-        return "bg-orange-100 text-orange-800";
-      case "PEDIDO_CONCLUIDO":
-        return "bg-blue-100 text-blue-800";
-      case "ENTREGUE":
-        return "bg-green-100 text-green-800";
-      case "FINALIZADO":
-        return "bg-stone-200 text-stone-700";
+        return "bg-[#eed7cd] text-[#8a4b2f]";
+      case "PEDIDO_PRONTO":
+        return "bg-[#dfe8d7] text-[#556B2F]";
       default:
         return "bg-stone-100 text-stone-700";
     }
   }
 
+  const totalPedidos = pedidos.length;
+  const pedidosNovos = pedidos.filter(
+    (pedido) => pedido.statusPedido === "NOVO_PEDIDO"
+  ).length;
+  const pedidosPreparo = pedidos.filter(
+    (pedido) => pedido.statusPedido === "PEDIDO_EM_PREPARO"
+  ).length;
+  const pedidosProntos = pedidos.filter(
+    (pedido) => pedido.statusPedido === "PEDIDO_PRONTO"
+  ).length;
+
   return (
     <section className="space-y-6">
-      <header className="flex items-start justify-between gap-4">
+      <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-semibold text-stone-800">Pedidos</h1>
+          <h1 className="text-3xl font-bold text-stone-800">Pedidos</h1>
           <p className="mt-1 text-sm text-stone-500">
-            Acompanhe e gerencie os pedidos do restaurante.
+            Visualize e acompanhe os pedidos do restaurante.
           </p>
         </div>
 
-        <button
-          onClick={listarPedidos}
-          className="rounded-lg bg-[#93ad47] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#839a3f]"
-        >
-          Atualizar
-        </button>
+        
       </header>
 
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
+          <p className="text-sm text-stone-500">Total de pedidos</p>
+          <h2 className="mt-2 text-2xl font-bold text-stone-800">{totalPedidos}</h2>
+        </div>
+
+        <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
+          <p className="text-sm text-stone-500">Novos</p>
+          <h2 className="mt-2 text-2xl font-bold text-[#7a5d14]">{pedidosNovos}</h2>
+        </div>
+
+        <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
+          <p className="text-sm text-stone-500">Em preparo</p>
+          <h2 className="mt-2 text-2xl font-bold text-[#8a4b2f]">{pedidosPreparo}</h2>
+        </div>
+
+        <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
+          <p className="text-sm text-stone-500">Prontos</p>
+          <h2 className="mt-2 text-2xl font-bold text-[#556B2F]">{pedidosProntos}</h2>
+        </div>
+      </div>
+
       {erro && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {erro}
         </div>
       )}
 
-      <div className="rounded-2xl border border-stone-200 bg-[#fcfbf8] shadow-sm">
+      <div className="rounded-2xl border border-stone-200 bg-white shadow-sm">
         {loading ? (
           <div className="p-6">
             <p className="text-sm text-stone-500">Carregando pedidos...</p>
@@ -187,14 +211,14 @@ function PedidosGerente() {
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full">
-              <thead className="border-b border-stone-200 bg-[#f3eee5]">
+              <thead className="border-b border-stone-200 bg-[#f7f3ec]">
                 <tr className="text-left">
-                  <th className="px-6 py-4 text-sm font-medium text-stone-500">ID</th>
-                  <th className="px-6 py-4 text-sm font-medium text-stone-500">Mesa</th>
-                  <th className="px-6 py-4 text-sm font-medium text-stone-500">Usuário</th>
-                  <th className="px-6 py-4 text-sm font-medium text-stone-500">Status</th>
-                  <th className="px-6 py-4 text-sm font-medium text-stone-500">Total</th>
-                  <th className="px-6 py-4 text-sm font-medium text-stone-500">Ações</th>
+                  <th className="px-6 py-4 text-sm font-semibold text-stone-500">Pedido</th>
+                  <th className="px-6 py-4 text-sm font-semibold text-stone-500">Mesa</th>
+                  <th className="px-6 py-4 text-sm font-semibold text-stone-500">Cliente</th>
+                  <th className="px-6 py-4 text-sm font-semibold text-stone-500">Status</th>
+                  <th className="px-6 py-4 text-sm font-semibold text-stone-500">Total</th>
+                  <th className="px-6 py-4 text-sm font-semibold text-stone-500">Ações</th>
                 </tr>
               </thead>
 
@@ -203,30 +227,50 @@ function PedidosGerente() {
                   const status = obterStatus(pedido);
 
                   return (
-                    <tr key={pedido.id} className="border-b border-stone-100 last:border-b-0">
-                      <td className="px-6 py-4 text-sm text-stone-700">{pedido.id}</td>
-                      <td className="px-6 py-4 text-sm text-stone-700">{obterMesa(pedido)}</td>
+                    <tr
+                      key={pedido.id}
+                      className="border-b border-stone-100 transition-colors hover:bg-[#faf8f4] last:border-b-0"
+                    >
+                      <td className="px-6 py-4 text-sm font-medium text-stone-800">
+                        #{pedido.id}
+                      </td>
+
+                      <td className="px-6 py-4 text-sm text-stone-700">
+                        Mesa {obterMesa(pedido)}
+                      </td>
+
                       <td className="px-6 py-4 text-sm text-stone-700">
                         {pedido.nomeUsuario || "—"}
                       </td>
+
                       <td className="px-6 py-4 text-sm text-stone-700">
-                        <span className={`rounded-full px-3 py-1 text-xs font-medium ${corStatus(status)}`}>
-                          {status}
+                        <span
+                          className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${corStatus(
+                            status
+                          )}`}
+                        >
+                          {formatarStatusBonito(status)}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-sm text-stone-700">{calcularTotal(pedido)}</td>
+
+                      <td className="px-6 py-4 text-sm font-medium text-stone-700">
+                        {calcularTotal(pedido)}
+                      </td>
+
                       <td className="px-6 py-4">
                         <div className="flex flex-wrap gap-2">
-                          <button
-                            onClick={() => avancarStatus(pedido)}
-                            className="rounded-md bg-[#93ad47] px-3 py-2 text-xs font-medium text-white transition hover:bg-[#839a3f]"
-                          >
-                            Avançar status
-                          </button>
+                          {status !== "PEDIDO_PRONTO" && (
+                            <button
+                              onClick={() => avancarStatus(pedido)}
+                              className="rounded-lg bg-[#556B2F] px-3 py-2 text-xs font-medium text-white transition hover:bg-[#4a5b28]"
+                            >
+                              Avançar status
+                            </button>
+                          )}
 
                           <button
                             onClick={() => excluirPedido(pedido.id)}
-                            className="rounded-md bg-red-600 px-3 py-2 text-xs font-medium text-white transition hover:bg-red-700"
+                            className="rounded-lg border border-red-200 bg-white px-3 py-2 text-xs font-medium text-red-700 transition hover:bg-red-50"
                           >
                             Excluir
                           </button>

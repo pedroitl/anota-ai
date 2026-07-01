@@ -66,12 +66,6 @@ function FuncionariosGerente() {
           </p>
         </div>
 
-        <button
-          onClick={listarUsuarios}
-          className="w-fit rounded-md bg-[#9db54c] px-4 py-2 text-sm font-medium text-white transition hover:opacity-90"
-        >
-          Atualizar
-        </button>
       </header>
 
       {erro && (
