@@ -3,17 +3,21 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Logo from "../../../components/UI/Logo";
 import Footer from "../../../components/Footer";
 
+
 function FinalizarMesa() {
   const location = useLocation();
   const navigate = useNavigate();
 
+
   const mesa = location.state?.mesa;
   const comandaId = location.state?.comandaId;
+
 
   const [pedidosMesa, setPedidosMesa] = useState([]);
   const [pagamentosMesa, setPagamentosMesa] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [confirmandoPagamento, setConfirmandoPagamento] = useState(false);
+
 
   useEffect(() => {
     if (!mesa || !comandaId) {
@@ -21,12 +25,15 @@ function FinalizarMesa() {
       return;
     }
 
+
     buscarDadosMesa();
   }, [mesa, comandaId]);
+
 
   function normalizarComandaId(obj) {
     return obj?.comanda_id ?? obj?.comandaId ?? obj?.comanda?.id ?? null;
   }
+
 
   function normalizarFormaPagamento(pagamento) {
     return (
@@ -37,6 +44,7 @@ function FinalizarMesa() {
     );
   }
 
+
   function normalizarDataPagamento(pagamento) {
     return (
       pagamento?.dataHora ??
@@ -46,45 +54,56 @@ function FinalizarMesa() {
     );
   }
 
+
   function normalizarStatusPagamento(pagamento) {
     return pagamento?.statusPagamento ?? pagamento?.status ?? null;
   }
 
+
   async function buscarDadosMesa() {
     try {
       setCarregando(true);
+
 
       const [responsePedidos, responsePagamentos] = await Promise.all([
         fetch("http://localhost:8080/pedidos"),
         fetch("http://localhost:8080/pagamentos"),
       ]);
 
+
       if (!responsePedidos.ok) {
         throw new Error("Erro ao buscar pedidos.");
       }
+
 
       if (!responsePagamentos.ok) {
         throw new Error("Erro ao buscar pagamentos.");
       }
 
+
       const pedidos = await responsePedidos.json();
       const pagamentos = await responsePagamentos.json();
 
+
       const numeroMesa =
         mesa.numero ?? mesa.numeroMesa ?? mesa.numero_mesa ?? null;
+
 
       const pedidosFiltrados = pedidos.filter(
         (pedido) => pedido.numeroMesa === numeroMesa,
       );
 
+
       const pagamentosFiltrados = pagamentos.filter(
         (pagamento) => normalizarComandaId(pagamento) === comandaId,
       );
+
 
       console.log("Mesa recebida:", mesa);
       console.log("ComandaId recebida:", comandaId);
       console.log("Pedidos filtrados:", pedidosFiltrados);
       console.log("Pagamentos filtrados:", pagamentosFiltrados);
+
 
       setPedidosMesa(pedidosFiltrados);
       setPagamentosMesa(pagamentosFiltrados);
@@ -96,8 +115,10 @@ function FinalizarMesa() {
     }
   }
 
+
   function formatarStatusMesa(status) {
     const statusNormalizado = status ?? mesa?.statusMesa ?? mesa?.status;
+
 
     const statusMap = {
       LIVRE: "Livre",
@@ -107,8 +128,10 @@ function FinalizarMesa() {
       FECHAMENTO_SOLICITADO: "Fechamento solicitado",
     };
 
+
     return statusMap[statusNormalizado] || "Status desconhecido";
   }
+
 
   function formatarStatusPedido(status) {
     const statusMap = {
@@ -119,8 +142,10 @@ function FinalizarMesa() {
       ENTREGUE: "Entregue",
     };
 
+
     return statusMap[status] || "Status desconhecido";
   }
+
 
   function formatarStatusPagamento(status) {
     const statusMap = {
@@ -129,8 +154,10 @@ function FinalizarMesa() {
       CANCELADO: "Cancelado",
     };
 
+
     return statusMap[status] || "Status desconhecido";
   }
+
 
   function formatarMetodoPagamento(metodo) {
     const metodoMap = {
@@ -139,8 +166,10 @@ function FinalizarMesa() {
       DINHEIRO: "Dinheiro",
     };
 
+
     return metodoMap[metodo] || metodo || "Não encontrado";
   }
+
 
   function formatarMoeda(valor) {
     return Number(valor || 0).toLocaleString("pt-BR", {
@@ -149,10 +178,12 @@ function FinalizarMesa() {
     });
   }
 
+
   function formatarData(data) {
     if (!data) return "-";
     return new Date(data).toLocaleString("pt-BR");
   }
+
 
   function pegarPrecoItem(item) {
     return Number(
@@ -165,6 +196,7 @@ function FinalizarMesa() {
     );
   }
 
+
   const valorFinalComanda = useMemo(() => {
     return pedidosMesa.reduce((accPedidos, pedido) => {
       const totalPedido = (pedido.itens || []).reduce((accItens, item) => {
@@ -173,20 +205,23 @@ function FinalizarMesa() {
         return accItens + quantidade * preco;
       }, 0);
 
+
       return accPedidos + totalPedido;
     }, 0);
   }, [pedidosMesa]);
 
+
   const pagamentoSelecionado = useMemo(() => {
     if (!pagamentosMesa.length) return null;
+
 
     return (
       pagamentosMesa.find(
         (pagamento) => normalizarStatusPagamento(pagamento) === "PENDENTE",
-
       ) || pagamentosMesa[0]
     );
   }, [pagamentosMesa]);
+
 
   async function concluirPagamento() {
     if (!pagamentoSelecionado?.id) {
@@ -194,16 +229,20 @@ function FinalizarMesa() {
       return;
     }
 
+
     const confirmar = window.confirm(
       "Tem certeza que deseja concluir o pagamento desta mesa?",
     );
+
 
     if (!confirmar) {
       return;
     }
 
+
     try {
       setConfirmandoPagamento(true);
+
 
       const response = await fetch(
         `http://localhost:8080/pagamentos/${pagamentoSelecionado.id}/concluir`,
@@ -212,9 +251,11 @@ function FinalizarMesa() {
         },
       );
 
+
       if (!response.ok) {
         throw new Error("Erro ao concluir pagamento.");
       }
+
 
       alert("Pagamento concluído com sucesso!");
       navigate("/home-funcionario/cashier/mesas");
@@ -224,8 +265,8 @@ function FinalizarMesa() {
     } finally {
       setConfirmandoPagamento(false);
     }
-
   }
+
 
   if (!mesa || !comandaId) {
     return (
@@ -238,11 +279,13 @@ function FinalizarMesa() {
             </p>
           </header>
 
+
           <main className="max-w-3xl mx-auto">
             <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm text-center">
               <p className="text-gray-600 mb-4">
                 Dados insuficientes para revisar a mesa.
               </p>
+
 
               <button
                 onClick={() => navigate("/home-funcionario/cashier/mesas")}
@@ -254,14 +297,17 @@ function FinalizarMesa() {
           </main>
         </div>
 
+
         <Footer />
       </div>
     );
   }
 
+
   const numeroMesaExibicao = mesa.numero ?? mesa.numeroMesa ?? mesa.numero_mesa;
   const capacidadeExibicao = mesa.capacidade;
   const statusMesaExibicao = mesa.status ?? mesa.statusMesa;
+
 
   return (
     <div className="min-h-screen bg-[#f5f5f5] w-full box-border overflow-x-hidden flex flex-col justify-between p-4 gap-7 sm:p-8">
@@ -273,13 +319,8 @@ function FinalizarMesa() {
           </p>
 
 
-          <button
-            onClick={() => navigate(-1)}
-            className="mt-4 bg-[#556B2F] text-white text-base font-semibold px-5 py-2 rounded-lg hover:bg-[#4a5b28]"
-          >
-            Voltar
-          </button>
         </header>
+
 
         <main className="max-w-4xl mx-auto space-y-5">
           <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
@@ -297,6 +338,7 @@ function FinalizarMesa() {
               <span className="font-semibold">{capacidadeExibicao}</span>
             </p>
           </div>
+
 
           {carregando ? (
             <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
@@ -328,10 +370,12 @@ function FinalizarMesa() {
                       </div>
                     </div>
 
+
                     <div className="border border-gray-200 rounded-xl p-4 bg-gray-50">
                       <p className="text-sm font-semibold text-gray-600 mb-3">
                         Descrição do pedido
                       </p>
+
 
                       <div className="space-y-2">
                         {(pedido.itens || []).map((item, index) => (
@@ -342,6 +386,7 @@ function FinalizarMesa() {
                             <span className="text-gray-700 text-sm">
                               {item.nomeProduto} x {item.quantidade}
                             </span>
+
 
                             <span className="text-sm font-medium text-gray-800">
                               {formatarMoeda(
@@ -357,8 +402,9 @@ function FinalizarMesa() {
                 ))
               )}
 
-              <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
-                <div className="flex items-center justify-between text-base">
+
+              <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
+                <div className="flex justify-between text-base mb-4">
                   <span className="font-bold text-gray-800">
                     Valor final da comanda
                   </span>
@@ -368,6 +414,7 @@ function FinalizarMesa() {
                     )}
                   </span>
                 </div>
+
 
                 <div className="border border-gray-200 rounded-xl p-4 bg-gray-50 space-y-2">
                   <p className="text-sm text-gray-700">
@@ -384,6 +431,7 @@ function FinalizarMesa() {
                   </p>
                 </div>
 
+
                 <button
                   onClick={concluirPagamento}
                   disabled={
@@ -392,9 +440,7 @@ function FinalizarMesa() {
                     normalizarStatusPagamento(pagamentoSelecionado) ===
                       "CONFIRMADO"
                   }
-
-                  className="w-full mt-5 bg-[#556B2F] text-white px-4 py-3 rounded-lg hover:bg-[#4a5b28] transition-colors font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
-
+                  className="w-full mt-5 bg-black text-white px-4 py-3 rounded-lg hover:bg-gray-900 transition-colors font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {confirmandoPagamento
                     ? "Confirmando pagamento..."
@@ -409,9 +455,11 @@ function FinalizarMesa() {
         </main>
       </div>
 
+
       <Footer />
     </div>
   );
 }
+
 
 export default FinalizarMesa;

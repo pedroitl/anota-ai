@@ -3,6 +3,7 @@ import Logo from "../../../components/UI/Logo";
 import Footer from "../../../components/Footer";
 import { useNavigate } from "react-router-dom";
 
+
 function MesasCashier() {
   const [secoes, setSecoes] = useState([]);
   const [comandas, setComandas] = useState([]);
@@ -10,7 +11,9 @@ function MesasCashier() {
   const [mesaSelecionada, setMesaSelecionada] = useState(null);
   const [carregando, setCarregando] = useState(true);
 
+
   const navigate = useNavigate();
+
 
   const secoesFiltradas = useMemo(() => {
     return secoes
@@ -23,36 +26,45 @@ function MesasCashier() {
       .filter((secao) => secao.mesas.length > 0);
   }, [secoes]);
 
+
   const mesas = useMemo(
     () => secoesFiltradas.flatMap((secao) => secao.mesas),
     [secoesFiltradas],
   );
 
+
   useEffect(() => {
     listarDados();
   }, []);
 
+
   async function listarDados() {
     try {
       setCarregando(true);
+
 
       const [responseMesas, responseComandas] = await Promise.all([
         fetch("http://localhost:8080/mesas"),
         fetch("http://localhost:8080/comandas"),
       ]);
 
+
       if (!responseMesas.ok) {
         throw new Error(`Erro ao buscar mesas: ${responseMesas.status}`);
       }
+
 
       if (!responseComandas.ok) {
         throw new Error(`Erro ao buscar comandas: ${responseComandas.status}`);
       }
 
+
       const dataMesas = await responseMesas.json();
       const dataComandas = await responseComandas.json();
 
+
       const secoesAgrupadas = agruparMesasPorSecao(dataMesas);
+
 
       setSecoes(secoesAgrupadas);
       setComandas(dataComandas);
@@ -64,11 +76,14 @@ function MesasCashier() {
     }
   }
 
+
   function agruparMesasPorSecao(listaMesas) {
     const mapaSecoes = {};
 
+
     listaMesas.forEach((mesa) => {
       const nomeSecao = mesa.secao || "Sem seção";
+
 
       if (!mapaSecoes[nomeSecao]) {
         mapaSecoes[nomeSecao] = {
@@ -76,6 +91,7 @@ function MesasCashier() {
           mesas: [],
         };
       }
+
 
       mapaSecoes[nomeSecao].mesas.push({
         id: mesa.id,
@@ -85,63 +101,9 @@ function MesasCashier() {
       });
     });
 
+
     return Object.values(mapaSecoes);
   }
-
-
-  function carregarMesasDoLocalStorage() {
-    const pedidosSalvos = JSON.parse(localStorage.getItem("pedidos")) || [];
-
-    const pedidosComFechamento = pedidosSalvos.filter(function (pedido) {
-      return pedido.status === "FECHAMENTO_SOLICITADO";
-    });
-
-    const numerosDasMesas = [
-      ...new Set(
-        pedidosComFechamento.map(function (pedido) {
-          return pedido.mesa;
-        })
-      ),
-    ];
-
-    const mesasFormatadas = numerosDasMesas.map(function (numeroMesa) {
-      return {
-        id: numeroMesa,
-        numeroMesa: numeroMesa,
-        statusMesa: "FECHAMENTO_SOLICITADO",
-        capacidade: 4,
-        secao: "Caixa",
-      };
-    });
-
-    const secoesAgrupadas = agruparMesasPorSecao(mesasFormatadas);
-
-    setSecoes(secoesAgrupadas);
-  }
-
-  useEffect(() => {
-    async function fetchMesas() {
-      try {
-        const response = await fetch("http://localhost:8080/mesas");
-
-        if (!response.ok) {
-          throw new Error(`Erro ao buscar mesas: ${response.status}`);
-        }
-
-        const data = await response.json();
-        const secoesAgrupadas = agruparMesasPorSecao(data);
-        setSecoes(secoesAgrupadas);
-      } catch (error) {
-        console.warn("Backend indisponível. Carregando mesas pelo localStorage.");
-        carregarMesasDoLocalStorage();
-      } finally {
-        setCarregando(false);
-      }
-    }
-
-    fetchMesas();
-  }, []);
-
 
 
   function formatarStatusMesa(status) {
@@ -153,35 +115,42 @@ function MesasCashier() {
       FECHAMENTO_SOLICITADO: "Fechamento solicitado",
     };
 
+
     return statusMap[status] || "Status desconhecido";
   }
+
 
   function abrirModal(numeroMesa) {
     setMesaSelecionada(numeroMesa);
     setModalAberto(true);
   }
 
+
   function fecharModal() {
     setModalAberto(false);
     setMesaSelecionada(null);
   }
 
+
   const mesaAtual = mesas.find((mesa) => mesa.numero === mesaSelecionada);
 
-  const secaoAtual =
 
-    secoes.find((secao) =>
+  const secaoAtual =
+    secoesFiltradas.find((secao) =>
       secao.mesas.some((mesa) => mesa.numero === mesaSelecionada),
     )?.nome || "Sem seção";
 
+
   function encontrarComandaAbertaDaMesa(mesa) {
   if (!mesa) return null;
+
 
   return (
     comandas.find((comanda) => {
       const statusDaComanda = String(
         comanda.status ?? comanda.statusComanda ?? "",
       ).toUpperCase();
+
 
       const mesaDaComanda =
         comanda.mesaId ??
@@ -190,6 +159,7 @@ function MesasCashier() {
         comanda.numeroMesa ??
         comanda.mesa?.numero ??
         comanda.mesaNumero;
+
 
       return (
         statusDaComanda === "ABERTA" &&
@@ -202,18 +172,22 @@ function MesasCashier() {
   );
 }
 
+
   function irParaCobranca() {
     if (!mesaAtual) {
       alert("Nenhuma mesa selecionada.");
       return;
     }
 
+
     const comandaAberta = encontrarComandaAbertaDaMesa(mesaAtual);
+
 
     if (!comandaAberta) {
       alert("Nenhuma comanda aberta foi encontrada para esta mesa.");
       return;
     }
+
 
     navigate("/home-funcionario/cashier/finalizar", {
       state: {
@@ -222,6 +196,7 @@ function MesasCashier() {
       },
     });
   }
+
 
   return (
     <div className="min-h-screen bg-[#f5f5f5] w-full box-border overflow-x-hidden flex flex-col justify-between p-4 gap-7 sm:p-8">
@@ -232,13 +207,13 @@ function MesasCashier() {
         </p>
       </header>
 
+
       <main className="flex-1">
         {carregando ? (
           <div className="max-w-3xl mx-auto bg-white border border-gray-200 rounded-xl p-6 shadow-sm text-center">
             <p className="text-gray-600">Carregando mesas...</p>
           </div>
-
-        ) : secoes.length === 0 ? (
+        ) : secoesFiltradas.length === 0 ? (
           <div className="max-w-3xl mx-auto bg-white border border-gray-200 rounded-xl p-6 shadow-sm text-center">
             <p className="text-gray-600">
               Nenhuma mesa com fechamento solicitado no momento.
@@ -246,8 +221,7 @@ function MesasCashier() {
           </div>
         ) : (
           <div className="grid grid-cols-1 p-6 sm:grid-cols-2 md:grid-cols-3 gap-8 sm:gap-10">
-
-            {secoes.map((secao) => (
+            {secoesFiltradas.map((secao) => (
               <div
                 key={secao.nome}
                 className="bg-white border border-gray-200 rounded-2xl shadow-sm p-5"
@@ -255,6 +229,7 @@ function MesasCashier() {
                 <h2 className="text-lg font-bold text-gray-800 mb-4">
                   {secao.nome}
                 </h2>
+
 
                 <div className="space-y-3">
                   {secao.mesas.map((mesa) => (
@@ -273,6 +248,7 @@ function MesasCashier() {
                         </span>
                       </div>
 
+
                       <p className="text-sm text-gray-600">
                         Capacidade: {mesa.capacidade} pessoas
                       </p>
@@ -285,12 +261,14 @@ function MesasCashier() {
         )}
       </main>
 
+
       {modalAberto && mesaAtual && (
         <div className="fixed inset-0 z-50">
           <div
             className="absolute inset-0 bg-black/40"
             onClick={fecharModal}
           />
+
 
           <div className="absolute right-0 top-0 h-full w-full sm:w-[380px] bg-white shadow-2xl p-6">
             <button
@@ -301,11 +279,14 @@ function MesasCashier() {
               ×
             </button>
 
+
             <h2 className="text-2xl font-bold mb-2">Mesa {mesaAtual.numero}</h2>
+
 
             <p className="text-gray-600 mb-4">
               Esta mesa está pronta para seguir ao caixa.
             </p>
+
 
             <div className="space-y-3">
               <div className="bg-gray-100 rounded-lg p-3">
@@ -315,6 +296,7 @@ function MesasCashier() {
                 </p>
               </div>
 
+
               <div className="bg-gray-100 rounded-lg p-3">
                 <p className="text-sm text-gray-500">Capacidade</p>
                 <p className="font-semibold text-gray-800">
@@ -322,25 +304,23 @@ function MesasCashier() {
                 </p>
               </div>
 
+
               <div className="bg-gray-100 rounded-lg p-3">
                 <p className="text-sm text-gray-500">Seção</p>
                 <p className="font-semibold text-gray-800">{secaoAtual}</p>
               </div>
             </div>
 
+
             <div className="mt-6 flex flex-col gap-3">
               <button
                 type="button"
-
-                onClick={() =>
-                  navigate("/home-funcionario/cashier/finalizar", {
-                    state: { mesa: mesaAtual },
-                  })
-                }
+                onClick={irParaCobranca}
                 className="w-full bg-[#556B2F] text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
               >
-                Ir para revisão
+                Ir para cobrança
               </button>
+
 
               <button
                 type="button"
@@ -354,9 +334,11 @@ function MesasCashier() {
         </div>
       )}
 
+
       <Footer />
     </div>
   );
 }
+
 
 export default MesasCashier;
