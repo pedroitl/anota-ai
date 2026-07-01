@@ -28,6 +28,7 @@ function Login() {
 
             localStorage.setItem("token", data.accessToken);
             localStorage.setItem("role", data.role);
+            localStorage.setItem("usuario", data.id);
 
             switch (data.role) {
                 case "ADMIN":
