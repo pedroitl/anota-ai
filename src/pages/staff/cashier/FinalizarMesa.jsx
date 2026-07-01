@@ -183,6 +183,7 @@ function FinalizarMesa() {
     return (
       pagamentosMesa.find(
         (pagamento) => normalizarStatusPagamento(pagamento) === "PENDENTE",
+
       ) || pagamentosMesa[0]
     );
   }, [pagamentosMesa]);
@@ -223,6 +224,7 @@ function FinalizarMesa() {
     } finally {
       setConfirmandoPagamento(false);
     }
+
   }
 
   if (!mesa || !comandaId) {
@@ -270,6 +272,13 @@ function FinalizarMesa() {
             Revisão da Mesa
           </p>
 
+
+          <button
+            onClick={() => navigate(-1)}
+            className="mt-4 bg-[#556B2F] text-white text-base font-semibold px-5 py-2 rounded-lg hover:bg-[#4a5b28]"
+          >
+            Voltar
+          </button>
         </header>
 
         <main className="max-w-4xl mx-auto space-y-5">
@@ -348,8 +357,8 @@ function FinalizarMesa() {
                 ))
               )}
 
-              <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-                <div className="flex justify-between text-base mb-4">
+              <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+                <div className="flex items-center justify-between text-base">
                   <span className="font-bold text-gray-800">
                     Valor final da comanda
                   </span>
@@ -383,7 +392,9 @@ function FinalizarMesa() {
                     normalizarStatusPagamento(pagamentoSelecionado) ===
                       "CONFIRMADO"
                   }
-                  className="w-full mt-5 bg-black text-white px-4 py-3 rounded-lg hover:bg-gray-900 transition-colors font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
+
+                  className="w-full mt-5 bg-[#556B2F] text-white px-4 py-3 rounded-lg hover:bg-[#4a5b28] transition-colors font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
+
                 >
                   {confirmandoPagamento
                     ? "Confirmando pagamento..."

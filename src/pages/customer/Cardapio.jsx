@@ -3,14 +3,23 @@ import { useNavigate } from "react-router-dom";
 import { produtosMock } from "../../mocks/produtosMock";
 
 function Cardapio() {
+
   const navigate = useNavigate();
   const [abrirDialog, setAbrirDialog] = useState(false);
-
+  const [abrirMesaDialog, setAbrirMesaDialog] = useState(true);
+  const [mesaSelecionada, setMesaSelecionada] = useState("");
+  const [mesas, setMesas] = useState([]);
+  const [comanda, setComanda] = useState(null);
   const [produtos, setProdutos] = useState([]);
+
   useEffect(() => {
     async function carregarProdutos() {
       try {
-        const response = await fetch("http://localhost:8080/produtos");
+        const response = await fetch("http://localhost:8080/produtos",{
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+          }
+        });
 
         if (!response.ok) {
           throw new Error("Erro ao buscar produtos");
@@ -27,12 +36,78 @@ function Cardapio() {
 
       } catch (error) {
         console.warn("Backend indisponível. Usando produtos mockados.");
-
         setProdutos(produtosMock)
       }
     }
     carregarProdutos();
   }, []);
+
+  useEffect(() => {
+    async function carregarMesas() {
+    try {
+      const response = await fetch(
+        "http://localhost:8080/mesas"
+      );
+
+      const data = await response.json();
+
+      setMesas(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  carregarMesas();
+  }, []);
+
+  async function confirmarMesa() {
+    try {
+
+      const verifica = await fetch(
+        `http://localhost:8080/comandas/mesa/${mesaSelecionada}`
+      );
+
+      if (verifica.ok) {
+
+        const comandaExistente = await verifica.json();
+
+        const resposta = window.confirm(
+          "Já existe uma comanda aberta para esta mesa. Você faz parte dela?"
+        );
+
+        if (resposta) {
+          setComanda(comandaExistente);
+          setAbrirMesaDialog(false);
+        }
+
+        return;
+      }
+
+      const response = await fetch(
+        "http://localhost:8080/comandas",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            numeroMesa: Number(mesaSelecionada)
+          })
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Erro ao abrir comanda");
+      }
+
+      const novaComanda = await response.json();
+
+      setComanda(novaComanda);
+      setAbrirMesaDialog(false);
+
+    } catch (error) {
+      alert(error.message);
+    }
+  }
 
   function aumentar(id) {
     const novosProdutos = produtos.map(function (produto) {
@@ -67,42 +142,57 @@ function Cardapio() {
     setAbrirDialog(true);
   }
 
-  function confirma(e) {
+  async function confirma(e) {
     e.preventDefault();
 
     if (produtosSelecionados.length === 0) {
       alert("Selecionar pelo menos um item para realizar o pedido!");
-      return
+      return;
     }
 
-    const novoPedido = {
-      id: Date.now(),
-      mesa: 1,
-      status: "NOVO_PEDIDO",
-      origem: "CLIENT",
-      itens: produtosSelecionados.map(function (produto) {
-        return {
-          id: produto.id,
-          nome: produto.nome,
-          quantidade: produto.quantidade,
-          preco: produto.preco
-        };
-      }),
-      total: totalPedido,
-      criadoEm: new Date().toISOString(),
-    };
+    try {
+      const token = localStorage.getItem("token");
 
-    const pedidosSalvos = JSON.parse(localStorage.getItem("pedidos")) || [];
+      const pedidoRequest = {
+        comandaId: comanda.id,
+        usuarioId: localStorage.getItem("usuario"),
+        observacao: "",
+        itens: produtosSelecionados.map(produto => ({
+          idProduto: produto.id,
+          quantidade: produto.quantidade
+        }))
+      };
 
-    const pedidosAtualizados = [...pedidosSalvos, novoPedido];
+      const response = await fetch(
+        "http://localhost:8080/pedidos",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify(pedidoRequest)
+        }
+      );
 
-    localStorage.setItem("pedidos", JSON.stringify(pedidosAtualizados));
+      if (!response.ok) {
+        throw new Error("Erro ao enviar pedido");
+      }
 
-    alert("Pedido enviado a cozinha!");
+      const pedidoCriado = await response.json();
 
-    navigate("/home-cliente/cardapio");
+      console.log(pedidoCriado);
 
+      alert("Pedido enviado à cozinha!");
+
+      navigate("/home-cliente/cardapio");
+
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao enviar pedido");
+    }
   }
+  
 
   function solicitarFechamentoMesa() {
     const pedidosSalvos = JSON.parse(localStorage.getItem("pedidos")) || [];
@@ -145,7 +235,47 @@ function Cardapio() {
     return total + produto.preco * produto.quantidade;
   }, 0);
 
+  if (abrirMesaDialog) {
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+        <div className="bg-white p-6 rounded-xl w-96">
+          <h2 className="text-2xl font-bold mb-4">
+            Selecione sua mesa
+          </h2>
+
+          <select
+            className="w-full border p-2 rounded"
+            value={mesaSelecionada}
+            onChange={(e) =>
+              setMesaSelecionada(e.target.value)
+            }
+          >
+            <option value="">
+              Escolha uma mesa
+            </option>
+
+            {mesas.map((mesa) => (
+              <option
+                key={mesa.id}
+                value={mesa.numeroMesa}
+              >
+                Mesa {mesa.numeroMesa}
+              </option>
+            ))}
+          </select>
+
+          <button
+            className="w-full mt-4 bg-green-800 text-white p-2 rounded"
+            onClick={confirmarMesa}
+          >
+            Confirmar
+          </button>
+        </div>
+      </div>
+    );
+  }
   return (
+    
     <div className="">
       <h1 className="text-4xl font-bold text-center text-gray-800 mb-10">
         Cardápio
