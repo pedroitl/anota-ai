@@ -35,7 +35,7 @@ function Cardapio() {
         setProdutos(produtosFormatados);
 
       } catch (error) {
-        console.warn("Backend indisponível. Usando produtos mockados.");
+        console.warn("Backend indisponível. Usando produtos mockados.", error);
         setProdutos(produtosMock)
       }
     }

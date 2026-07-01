@@ -3,6 +3,29 @@ import Logo from "../../../components/UI/Logo";
 import Footer from "../../../components/Footer";
 import { useNavigate } from "react-router-dom";
 
+function agruparMesasPorSecao(listaMesas) {
+  const mapaSecoes = {};
+
+  listaMesas.forEach((mesa) => {
+    const nomeSecao = mesa.secao || "Sem seção";
+
+    if (!mapaSecoes[nomeSecao]) {
+      mapaSecoes[nomeSecao] = {
+        nome: nomeSecao,
+        mesas: [],
+      };
+    }
+
+    mapaSecoes[nomeSecao].mesas.push({
+      id: mesa.id,
+      numero: mesa.numeroMesa,
+      status: mesa.statusMesa,
+      capacidade: mesa.capacidade,
+    });
+  });
+
+  return Object.values(mapaSecoes);
+}
 
 function MesasCashier() {
   const [secoes, setSecoes] = useState([]);
@@ -32,79 +55,41 @@ function MesasCashier() {
     [secoesFiltradas],
   );
 
-
   useEffect(() => {
+    async function listarDados() {
+      try {
+        setCarregando(true);
+
+        const [responseMesas, responseComandas] = await Promise.all([
+          fetch("http://localhost:8080/mesas"),
+          fetch("http://localhost:8080/comandas"),
+        ]);
+
+        if (!responseMesas.ok) {
+          throw new Error(`Erro ao buscar mesas: ${responseMesas.status}`);
+        }
+
+        if (!responseComandas.ok) {
+          throw new Error(`Erro ao buscar comandas: ${responseComandas.status}`);
+        }
+
+        const dataMesas = await responseMesas.json();
+        const dataComandas = await responseComandas.json();
+
+        const secoesAgrupadas = agruparMesasPorSecao(dataMesas);
+
+        setSecoes(secoesAgrupadas);
+        setComandas(dataComandas);
+      } catch (error) {
+        console.error("Erro ao listar dados do caixa:", error);
+        alert("Não foi possível carregar as mesas do caixa.");
+      } finally {
+        setCarregando(false);
+      }
+    }
+
     listarDados();
   }, []);
-
-
-  async function listarDados() {
-    try {
-      setCarregando(true);
-
-
-      const [responseMesas, responseComandas] = await Promise.all([
-        fetch("http://localhost:8080/mesas"),
-        fetch("http://localhost:8080/comandas"),
-      ]);
-
-
-      if (!responseMesas.ok) {
-        throw new Error(`Erro ao buscar mesas: ${responseMesas.status}`);
-      }
-
-
-      if (!responseComandas.ok) {
-        throw new Error(`Erro ao buscar comandas: ${responseComandas.status}`);
-      }
-
-
-      const dataMesas = await responseMesas.json();
-      const dataComandas = await responseComandas.json();
-
-
-      const secoesAgrupadas = agruparMesasPorSecao(dataMesas);
-
-
-      setSecoes(secoesAgrupadas);
-      setComandas(dataComandas);
-    } catch (error) {
-      console.error("Erro ao listar dados do caixa:", error);
-      alert("Não foi possível carregar as mesas do caixa.");
-    } finally {
-      setCarregando(false);
-    }
-  }
-
-
-  function agruparMesasPorSecao(listaMesas) {
-    const mapaSecoes = {};
-
-
-    listaMesas.forEach((mesa) => {
-      const nomeSecao = mesa.secao || "Sem seção";
-
-
-      if (!mapaSecoes[nomeSecao]) {
-        mapaSecoes[nomeSecao] = {
-          nome: nomeSecao,
-          mesas: [],
-        };
-      }
-
-
-      mapaSecoes[nomeSecao].mesas.push({
-        id: mesa.id,
-        numero: mesa.numeroMesa,
-        status: mesa.statusMesa,
-        capacidade: mesa.capacidade,
-      });
-    });
-
-
-    return Object.values(mapaSecoes);
-  }
-
 
   function formatarStatusMesa(status) {
     const statusMap = {
@@ -270,7 +255,7 @@ function MesasCashier() {
           />
 
 
-          <div className="absolute right-0 top-0 h-full w-full sm:w-[380px] bg-white shadow-2xl p-6">
+          <div className="absolute right-0 top-0 h-full w-full sm:w-95 bg-white shadow-2xl p-6">
             <button
               type="button"
               onClick={fecharModal}
