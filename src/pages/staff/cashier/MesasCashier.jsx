@@ -12,57 +12,7 @@ function MesasCashier() {
 
   const navigate = useNavigate();
 
-  const secoesFiltradas = useMemo(() => {
-    return secoes
-      .map((secao) => ({
-        ...secao,
-        mesas: secao.mesas.filter(
-          (mesa) => mesa.status === "FECHAMENTO_SOLICITADO",
-        ),
-      }))
-      .filter((secao) => secao.mesas.length > 0);
-  }, [secoes]);
-
-  const mesas = useMemo(
-    () => secoesFiltradas.flatMap((secao) => secao.mesas),
-    [secoesFiltradas],
-  );
-
-  useEffect(() => {
-    listarDados();
-  }, []);
-
-  async function listarDados() {
-    try {
-      setCarregando(true);
-
-      const [responseMesas, responseComandas] = await Promise.all([
-        fetch("http://localhost:8080/mesas"),
-        fetch("http://localhost:8080/comandas"),
-      ]);
-
-      if (!responseMesas.ok) {
-        throw new Error(`Erro ao buscar mesas: ${responseMesas.status}`);
-      }
-
-      if (!responseComandas.ok) {
-        throw new Error(`Erro ao buscar comandas: ${responseComandas.status}`);
-      }
-
-      const dataMesas = await responseMesas.json();
-      const dataComandas = await responseComandas.json();
-
-      const secoesAgrupadas = agruparMesasPorSecao(dataMesas);
-
-      setSecoes(secoesAgrupadas);
-      setComandas(dataComandas);
-    } catch (error) {
-      console.error("Erro ao listar dados do caixa:", error);
-      alert("Não foi possível carregar as mesas do caixa.");
-    } finally {
-      setCarregando(false);
-    }
-  }
+  const mesas = useMemo(() => secoes.flatMap((secao) => secao.mesas), [secoes]);
 
   function agruparMesasPorSecao(listaMesas) {
     const mapaSecoes = {};
@@ -87,6 +37,61 @@ function MesasCashier() {
 
     return Object.values(mapaSecoes);
   }
+
+  function carregarMesasDoLocalStorage() {
+    const pedidosSalvos = JSON.parse(localStorage.getItem("pedidos")) || [];
+
+    const pedidosComFechamento = pedidosSalvos.filter(function (pedido) {
+      return pedido.status === "FECHAMENTO_SOLICITADO";
+    });
+
+    const numerosDasMesas = [
+      ...new Set(
+        pedidosComFechamento.map(function (pedido) {
+          return pedido.mesa;
+        })
+      ),
+    ];
+
+    const mesasFormatadas = numerosDasMesas.map(function (numeroMesa) {
+      return {
+        id: numeroMesa,
+        numeroMesa: numeroMesa,
+        statusMesa: "FECHAMENTO_SOLICITADO",
+        capacidade: 4,
+        secao: "Caixa",
+      };
+    });
+
+    const secoesAgrupadas = agruparMesasPorSecao(mesasFormatadas);
+
+    setSecoes(secoesAgrupadas);
+  }
+
+  useEffect(() => {
+    async function fetchMesas() {
+      try {
+        const response = await fetch("http://localhost:8080/mesas");
+
+        if (!response.ok) {
+          throw new Error(`Erro ao buscar mesas: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const secoesAgrupadas = agruparMesasPorSecao(data);
+        setSecoes(secoesAgrupadas);
+      } catch (error) {
+        console.warn("Backend indisponível. Carregando mesas pelo localStorage.");
+        carregarMesasDoLocalStorage();
+      } finally {
+        setCarregando(false);
+      }
+    }
+
+    fetchMesas();
+  }, []);
+
+
 
   function formatarStatusMesa(status) {
     const statusMap = {
@@ -113,7 +118,7 @@ function MesasCashier() {
   const mesaAtual = mesas.find((mesa) => mesa.numero === mesaSelecionada);
 
   const secaoAtual =
-    secoesFiltradas.find((secao) =>
+    secoes.find((secao) =>
       secao.mesas.some((mesa) => mesa.numero === mesaSelecionada),
     )?.nome || "Sem seção";
 
@@ -180,7 +185,7 @@ function MesasCashier() {
           <div className="max-w-3xl mx-auto bg-white border border-gray-200 rounded-xl p-6 shadow-sm text-center">
             <p className="text-gray-600">Carregando mesas...</p>
           </div>
-        ) : secoesFiltradas.length === 0 ? (
+        ) : secoes.length === 0 ? (
           <div className="max-w-3xl mx-auto bg-white border border-gray-200 rounded-xl p-6 shadow-sm text-center">
             <p className="text-gray-600">
               Nenhuma mesa com fechamento solicitado no momento.
@@ -188,7 +193,7 @@ function MesasCashier() {
           </div>
         ) : (
           <div className="grid grid-cols-1 p-6 sm:grid-cols-2 md:grid-cols-3 gap-8 sm:gap-10">
-            {secoesFiltradas.map((secao) => (
+            {secoes.map((secao) => (
               <div
                 key={secao.nome}
                 className="bg-white border border-gray-200 rounded-2xl shadow-sm p-5"
@@ -233,7 +238,7 @@ function MesasCashier() {
             onClick={fecharModal}
           />
 
-          <div className="absolute right-0 top-0 h-full w-full sm:w-[380px] bg-white shadow-2xl p-6">
+          <div className="absolute right-0 top-0 h-full w-full sm:w-96 bg-white border-l border-gray-200 shadow-xl p-6">
             <button
               type="button"
               onClick={fecharModal}
@@ -272,16 +277,20 @@ function MesasCashier() {
             <div className="mt-6 flex flex-col gap-3">
               <button
                 type="button"
-                onClick={irParaCobranca}
+                onClick={() =>
+                  navigate("/home-funcionario/cashier/finalizar", {
+                    state: { mesa: mesaAtual },
+                  })
+                }
                 className="w-full bg-[#556B2F] text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
               >
-                Ir para cobrança
+                Ir para revisão
               </button>
 
               <button
                 type="button"
                 onClick={fecharModal}
-                className="w-full bg-gray-800 text-white px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors font-medium"
+                className="w-full bg-[#7A1F2B] text-white px-4 py-3 rounded-lg hover:bg-[#651824] transition-colors font-medium"
               >
                 Fechar
               </button>

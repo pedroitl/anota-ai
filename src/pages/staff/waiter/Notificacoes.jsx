@@ -1,139 +1,118 @@
-import Logo from "../../../components/UI/Logo";
 import { useEffect, useState } from "react";
-import { data } from "react-router-dom";
-
+import Logo from "../../../components/UI/Logo";
 
 function Notificacoes() {
-  const [notificacoes, setNotificacoes] = useState([]);
+  const [pedidosProntos, setPedidosProntos] = useState([]);
 
-   useEffect( () => {
-      listarNotificacoes();
-    }, []);
+  useEffect(() => {
+    carregarPedidosProntos();
+  }, []);
 
-    async function listarNotificacoes() {
-    try {
-      const response = await fetch("http://localhost:8080/notificacoes")
+  function carregarPedidosProntos() {
+    const pedidosSalvos = JSON.parse(localStorage.getItem("pedidos")) || [];
 
-      if(!response.ok){
-        throw new Error("Erro ao buscar notificacao!");
-      }
-
-      const data = await response.json();
-      setNotificacoes(data);
-
-    } catch(error){
-      console.error(error)
-    }
-  }
-
-  async function marcarNotificacaoComoLida(idNotificacao) {
-    try{
-      const response = await fetch(`http://localhost:8080/notificacoes/${idNotificacao}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json"
-        },
-      }
-    );
-
-    console.log("status response:", response.status);
-
-      if(!response.ok){
-        throw new Error("erro ao encontrar notificacao!")
-      }
-      await listarNotificacoes();
-
-    } catch(error){
-      console.log(error)
-    }
-  }
-
-  function formatarDataHora(dataString){
-    
-    if(!dataString) return "-";
-
-    const data = new Date(dataString)
-
-    return data.toLocaleString("pt-BR",{
-      day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false
+    const pedidosFiltrados = pedidosSalvos.filter(function (pedido) {
+      return pedido.status === "PEDIDO_CONCLUIDO";
     });
 
-
+    setPedidosProntos(pedidosFiltrados);
   }
 
+  function confirmarEntrega(id) {
+    const pedidosSalvos = JSON.parse(localStorage.getItem("pedidos")) || [];
 
-  function getTipoInfo(tipo) {
-    switch (tipo) {
-      case "ATENDIMENTO":
+    const pedidosAtualizados = pedidosSalvos.map(function (pedido) {
+      if (pedido.id === id) {
         return {
-          texto: "Atendimento",
-          cor: "bg-blue-100 text-blue-600",
+          ...pedido,
+          status: "ENTREGUE",
+          entregueEm: new Date().toISOString(),
         };
+      }
 
-      case "PEDIDO_PRONTO":
-        return {
-          texto: "Pedido Pronto",
-          cor: "bg-green-100 text-green-600",
-        };
+      return pedido;
+    });
 
-      case "FECHAMENTO":
-        return {
-          texto: "Fechamento",
-          cor: "bg-yellow-100 text-yellow-600",
-        };
+    localStorage.setItem("pedidos", JSON.stringify(pedidosAtualizados));
 
-      default:
-        return {
-          texto: "Notificação",
-          cor: "bg-gray-100 text-gray-600",
-        };
-    }
+    const pedidosAindaProntos = pedidosAtualizados.filter(function (pedido) {
+      return pedido.status === "PEDIDO_CONCLUIDO";
+    });
+
+    setPedidosProntos(pedidosAindaProntos);
   }
+
   return (
-    <div className="min-h-screen w-full p-4 sm:p-8">
-      <header className="flex flex-col items-center gap-2">
-        <Logo />
-        <h1 className="text-center text-lg md:text-2xl font-bold">
-          Notificações
-        </h1>
+    <div className="min-h-screen bg-[#f5f5f5] p-6">
+      <Logo />
 
-      </header>
-      <main className="max-w-4xl mx-auto mt-6 flex flex-col gap-4">
-        {notificacoes.map((notificacao) => {
-            
-            const tipoInfo = getTipoInfo(notificacao.tipoNotificacao);
+      <h1 className="text-3xl font-bold text-gray-800 mb-6">
+        Notificações do Garçom
+      </h1>
 
+      {pedidosProntos.length === 0 ? (
+        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+          <p className="text-gray-600">
+            Nenhum pedido pronto para entrega no momento.
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {pedidosProntos.map(function (pedido) {
             return (
-                <div
-                    key={notificacao.id}
-                    className={`p-4 rounded-lg mb-2 ${notificacao.lida ? "bg-[#e2e8f0]" : "bg-[#d8e7bf]"} `}
-                >
-                    <span
-                    className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${tipoInfo.cor}`}
-                    >
-                    {tipoInfo.texto}
-                    </span>
-                    <p className="font-semibold">{notificacao.mensagem}</p>
-                    <p className="text-sm text-gray-500">{formatarDataHora(notificacao.dataHora)}</p>
-                    {!notificacao.lida ? (
-                        <button
-                            onClick={() => marcarNotificacaoComoLida(notificacao.id)}
-                            className="mt-3 px-3 py-2 rounded-lg bg-[#556B2F] text-white text-sm hover:opacity-90"
-                        >
-                            Marcar como Lida
-                        </button>
-                    ) : (
-                        <span className="mt-2 text-sm text-gray-500">Lida</span>
-                    )}
+              <div key={pedido.id} className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-bold text-gray-800">
+                    Mesa {pedido.mesa}
+                  </h2>
+
+                  <span className="bg-[#556B2F] text-white px-3 py-1 rounded-full text-sm font-bold">
+                    PEDIDO_CONCLUIDO
+                  </span>
                 </div>
+
+                <p className="text-gray-700 font-semibold mb-3">
+                  Pedido pronto para ser levado à mesa.
+                </p>
+
+                <div className="space-y-3">
+                  {pedido.itens.map(function (item) {
+                    return (
+                      <div
+                        key={item.id}
+                        className="flex justify-between border-b pb-2"
+                      >
+                        <span>
+                          {item.quantidade}x {item.nome}
+                        </span>
+
+                        <span>
+                          R$ {(item.preco * item.quantidade).toFixed(2)}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="mt-4 flex justify-between font-bold text-lg">
+                  <span>Total</span>
+                  <span>R$ {pedido.total.toFixed(2)}</span>
+                </div>
+
+                <div className="mt-5 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => confirmarEntrega(pedido.id)}
+                    className="bg-[#556B2F] text-white px-4 py-2 rounded-lg hover:bg-[#4a5b28] font-semibold"
+                  >
+                    Confirmar entrega na mesa
+                  </button>
+                </div>
+              </div>
             );
-        })}
-      </main>
+          })}
+        </div>
+      )}
     </div>
   );
 }

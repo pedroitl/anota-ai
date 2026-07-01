@@ -89,11 +89,25 @@ function FinalizarMesa() {
       setPedidosMesa(pedidosFiltrados);
       setPagamentosMesa(pagamentosFiltrados);
     } catch (error) {
-      console.error("Erro ao buscar dados da mesa:", error);
-      alert("Não foi possível carregar os dados da mesa.");
+      console.warn("Backend indisponível. Buscando comanda pelo localStorage.");
+      buscarDadosMesaLocalStorage();
     } finally {
       setCarregando(false);
     }
+  }
+
+  function buscarDadosMesaLocalStorage() {
+    const pedidosSalvos = JSON.parse(localStorage.getItem("pedidos")) || [];
+
+    const pedidosFiltrados = pedidosSalvos.filter(function (pedido) {
+      return (
+        pedido.mesa === mesa.numero &&
+        pedido.status === "FECHAMENTO_SOLICITADO"
+      );
+    });
+
+    setPedidosMesa(pedidosFiltrados);
+    setPagamentosMesa([]);
   }
 
   function formatarStatusMesa(status) {
@@ -157,11 +171,11 @@ function FinalizarMesa() {
   function pegarPrecoItem(item) {
     return Number(
       item.precoUnitario ??
-        item.preco ??
-        item.valorUnitario ??
-        item.precoProduto ??
-        item.valor ??
-        0,
+      item.preco ??
+      item.valorUnitario ??
+      item.precoProduto ??
+      item.valor ??
+      0,
     );
   }
 
@@ -223,6 +237,7 @@ function FinalizarMesa() {
     } finally {
       setConfirmandoPagamento(false);
     }
+
   }
 
   if (!mesa || !comandaId) {
@@ -244,7 +259,7 @@ function FinalizarMesa() {
 
               <button
                 onClick={() => navigate("/home-funcionario/cashier/mesas")}
-                className="bg-black text-white px-4 py-3 rounded-lg hover:bg-gray-900 transition-colors"
+                className="bg-[#556B2F] text-white px-4 py-3 rounded-lg hover:bg-[#4a5b28] transition-colors"
               >
                 Voltar para mesas
               </button>
@@ -269,10 +284,16 @@ function FinalizarMesa() {
           <p className="text-xl sm:text-2xl font-bold text-gray-700 text-center mt-2">
             Revisão da Mesa
           </p>
+          <button
+            onClick={() => navigate(-1)}
+            className="mt-4 bg-[#556B2F] text-white text-base font-semibold px-5 py-2 rounded-lg hover:bg-[#4a5b28]"
+          >
+            Voltar
+          </button>
         </header>
 
-        <main className="max-w-4xl mx-auto space-y-5">
-          <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
+        <main className="max-w-4xl mx-auto space-y-4">
+          <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
             <h2 className="text-xl font-bold text-gray-800">
               Mesa {numeroMesaExibicao}
             </h2>
@@ -304,39 +325,39 @@ function FinalizarMesa() {
                 pedidosMesa.map((pedido) => (
                   <div
                     key={pedido.id}
-                    className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm"
+                    className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm"
                   >
-                    <div className="flex items-start justify-between gap-3 mb-4">
+                    <div className="mb-3">
                       <div>
                         <p className="font-bold text-gray-800">
                           Pedido número: {pedido.id}
                         </p>
                         <p className="text-sm text-gray-600">
                           Status do pedido:{" "}
-                          {formatarStatusPedido(pedido.statusPedido)}
+                          {formatarStatusPedido(pedido.statusPedido || pedido.status)}
                         </p>
                       </div>
                     </div>
 
-                    <div className="border border-gray-200 rounded-xl p-4 bg-gray-50">
+                    <div className="rounded-lg border border-gray-200 p-3 bg-[#f5f5f5]">
                       <p className="text-sm font-semibold text-gray-600 mb-3">
-                        Descrição do pedido
+                        Itens do pedido
                       </p>
 
                       <div className="space-y-2">
                         {(pedido.itens || []).map((item, index) => (
                           <div
                             key={index}
-                            className="flex items-center justify-between gap-3"
+                            className="flex items-center justify-between gap-3 border-b border-gray-200 pb-2 last:border-b-0 last:pb-0"
                           >
                             <span className="text-gray-700 text-sm">
-                              {item.nomeProduto} x {item.quantidade}
+                              {item.nomeProduto || item.nome} x {item.quantidade}
                             </span>
 
                             <span className="text-sm font-medium text-gray-800">
                               {formatarMoeda(
                                 Number(item.quantidade || 0) *
-                                  pegarPrecoItem(item),
+                                pegarPrecoItem(item),
                               )}
                             </span>
                           </div>
@@ -346,9 +367,8 @@ function FinalizarMesa() {
                   </div>
                 ))
               )}
-
-              <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-                <div className="flex justify-between text-base mb-4">
+              <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+                <div className="flex items-center justify-between text-base">
                   <span className="font-bold text-gray-800">
                     Valor final da comanda
                   </span>
@@ -382,7 +402,8 @@ function FinalizarMesa() {
                     normalizarStatusPagamento(pagamentoSelecionado) ===
                       "CONFIRMADO"
                   }
-                  className="w-full mt-5 bg-black text-white px-4 py-3 rounded-lg hover:bg-gray-900 transition-colors font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="w-full mt-5 bg-[#556B2F] text-white px-4 py-3 rounded-lg hover:bg-[#4a5b28] transition-colors font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
+
                 >
                   {confirmandoPagamento
                     ? "Confirmando pagamento..."

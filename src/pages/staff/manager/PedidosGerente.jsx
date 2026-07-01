@@ -66,8 +66,8 @@ function PedidosGerente() {
     const fluxo = [
       "NOVO_PEDIDO",
       "RECEBIDO",
-      "EM_PREPARO",
-      "PRONTO",
+      "PEDIDO_EM_PREPARO",
+      "PEDIDO_CONCLUIDO",
       "ENTREGUE",
       "FINALIZADO",
     ];
@@ -138,9 +138,9 @@ function PedidosGerente() {
       case "NOVO_PEDIDO":
       case "RECEBIDO":
         return "bg-yellow-100 text-yellow-800";
-      case "EM_PREPARO":
+      case "PEDIDO_EM_PREPARO":
         return "bg-orange-100 text-orange-800";
-      case "PRONTO":
+      case "PEDIDO_CONCLUIDO":
         return "bg-blue-100 text-blue-800";
       case "ENTREGUE":
         return "bg-green-100 text-green-800";
