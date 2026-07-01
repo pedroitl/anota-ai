@@ -5,40 +5,61 @@ import { useNavigate } from "react-router-dom";
 function CustomerRegister() {
   const navigate = useNavigate();
   const [nomeCompleto, setNomeCompleto] = useState("");
-  const [telefone, setTelefone] = useState("");
-  const [cpf, setCpf] = useState("");
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
 
   const [erro, setErro] = useState("");
 
-  function validar() {
-    if (nomeCompleto.trim() === "") {
-      setErro("O nome completo é obrigatório.");
-      return false;
-    }
-    if (telefone.trim() === "") {
-      setErro("O telefone é obrigatório.");
-      return false;
-    }
-    if (telefone.trim().length > 15) {
-      setErro("O telefone deve conter no máximo 15 dígitos.");
-      return false;
-    }
-    if (cpf.trim() === "") {
-      setErro("O CPF é obrigatório.");
-      return false;
-    }
-    if (cpf.trim().length !== 11) {
-      setErro("O CPF deve conter 11 caracteres.");
-      return false;
-    }
-    setErro("");
-    return true;
+ function validar() {
+  if (nomeCompleto.trim() === "") {
+    setErro("O nome completo é obrigatório.");
+    return false;
   }
 
-  function handleSubmit(e) {
+  if (email.trim() === "") {
+    setErro("O e-mail é obrigatório.");
+    return false;
+  }
+
+  if (senha.trim() === "") {
+    setErro("A senha é obrigatória.");
+    return false;
+  }
+
+  if (senha.length < 8) {
+    setErro("A senha deve ter pelo menos 8 caracteres.");
+    return false;
+  }
+
+  setErro("");
+  return true;
+}
+
+  async function handleSubmit(e) {
     e.preventDefault();
-    if (validar() === true) {
-      navigate("/home-cliente/cardapio");
+
+    if (!validar()) return;
+
+    try {
+      const response = await fetch("http://localhost:8080/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nome: nomeCompleto,
+          email,
+          senha,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao cadastrar");
+      }
+
+      navigate("/login");
+    } catch (error) {
+      setErro(error.message);
     }
   }
 
@@ -69,29 +90,29 @@ function CustomerRegister() {
           className="border border-gray-300 rounded-md p-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-900 w-full"
         />
 
-        <label htmlFor="telefone" className="font-semibold text-start">
-          Telefone:
+        <label htmlFor="e-mail" className="font-semibold text-start">
+          E-mail:
         </label>
         <input
-          type="tel"
-          id="telefone"
-          value={telefone}
-          onChange={(e) => setTelefone(e.target.value)}
+          type="email"
+          id="e-mail"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           placeholder="Digite seu telefone"
           className="border border-gray-300 rounded-md p-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-900 w-full"
         />
 
-        <label htmlFor="cpf" className="font-semibold text-start">
-          CPF:
+        <label htmlFor="senha" className="font-semibold text-start">
+          Senha:
         </label>
-        <input
-          type="text"
-          id="cpf"
-          value={cpf}
-          onChange={(e) => setCpf(e.target.value)}
-          placeholder="000.000.000-00"
-          className="border border-gray-300 rounded-md p-2 px-4 mb-1 focus:outline-none focus:ring-2 focus:ring-green-900 w-full"
-        />
+          <input
+            type="password"
+            id="senha"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+            placeholder="Digite sua senha"
+            className="border border-gray-300 rounded-md p-2 px-4 mb-1 focus:outline-none focus:ring-2 focus:ring-green-900 w-full"
+          />
         {erro && <p>{erro}</p>}
         <button
           type="submit"
